@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Days</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        /* Filter section */
+        .filters {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .filters label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .filters select {
+            margin-right: 20px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Table styles */
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background-color: #357abd;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* Input and select styles in table */
+        td input, td select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        td input[type="date"] {
+            width: 130px;
+        }
+        
+        .text-code-input {
+            text-transform: uppercase;
+            font-family: monospace;
+        }
+        
+        /* Button styles */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+        
+        .btn:hover {
+            opacity: 0.8;
+        }
+        
+        .btn-add {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .btn-edit {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-save {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        .btn-cancel {
+            background-color: #757575;
+            color: white;
+        }
+        
+        /* Story preview section */
+        .story-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        
+        .story-preview img {
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .story-details {
+            line-height: 1.4;
+        }
+        
+        /* Add new row button */
+        .add-new-btn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .add-new-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Sort indicators */
+        .sort-indicator {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Days That Matter</h1>
+    
+    <button class="add-new-btn" onclick="addNewRow()">Add New Special Day</button>
+    
+    <div class="filters">
+        <label for="siteFilter">Site:</label>
+        <select id="siteFilter" onchange="filterTable()">
+            <option value="ALL">ALL</option>
+            <option value="KIDS">KIDS</option>
+            <option value="FAITH">FAITH</option>
+            <option value="SHOP">SHOP</option>
+        </select>
+        
+        <label for="countryFilter">Country:</label>
+        <select id="countryFilter" onchange="filterTable()">
+            <option value="ALL">ALL</option>
+            <option value="US">US</option>
+            <option value="Australia">Australia</option>
+            <option value="Austria">Austria</option>
+            <option value="Canada">Canada</option>
+            <option value="England">England</option>
+            <option value="France">France</option>
+            <option value="Germany">Germany</option>
+            <option value="Ireland">Ireland</option>
+            <option value="Japan">Japan</option>
+            <option value="Mexico">Mexico</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="Norway">Norway</option>
+            <option value="Russia">Russia</option>
+            <option value="Scotland">Scotland</option>
+            <option value="Spain">Spain</option>
+        </select>
+    </div>
+    
+    <table id="specialDaysTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Country <span class="sort-indicator">↕</span></th>
+                <th onclick="sortTable(1)">Start Date <span class="sort-indicator">↕</span></th>
+                <th onclick="sortTable(2)">End Date <span class="sort-indicator">↕</span></th>
+                <th onclick="sortTable(3)">Title <span class="sort-indicator">↕</span></th>
+                <th onclick="sortTable(4)">Site <span class="sort-indicator">↕</span></th>
+                <th>Text Code</th>
+                <th>Story Preview</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+                  </tbody>
+    </table>
+    
+    <script>
+        // Country list with US at top
+        const countries = ['US', 'Australia', 'Austria', 'Canada', 'England', 'France', 'Germany', 'Ireland', 'Japan', 'Mexico', 'Netherlands', 'Norway', 'Russia', 'Scotland', 'Spain'];
+        
+        // Holiday titles
+        const holidays = [
+            'Christmas Day', 'Day of the Dead', 'Easter', 'Halloween', 'Hanukkah',
+            'Independence Day', 'Labor Day', 'Memorial Day', 'New Year\'s Day',
+            'Passover', 'President\'s Day', 'St. Patrick\'s Day', 'Thanksgiving Day',
+            'Valentine\'s Day', 'Veteran\'s Day'
+        ].sort();
+        
+        // Sites
+        const sites = ['KIDS', 'FAITH', 'SHOP'];
+        
+        let specialDays = []; // Will hold data from Supabase
+        let editingRow = null;
+        
+        // Create country dropdown HTML
+        function getCountryOptions(selected = 'US') {
+            let html = '';
+            countries.forEach(country => {
+                html += `<option value="${country}" ${country === selected ? 'selected' : ''}>${country}</option>`;
+            });
+            return html;
+        }
+        
+        // Create holiday dropdown HTML
+        function getHolidayOptions(selected = '') {
+            let html = '<option value="">Select...</option>';
+            holidays.forEach(holiday => {
+                html += `<option value="${holiday}" ${holiday === selected ? 'selected' : ''}>${holiday}</option>`;
+            });
+            return html;
+        }
+        
+        // Create site dropdown HTML
+        function getSiteOptions(selected = '') {
+            let html = '<option value="">Select...</option>';
+            sites.forEach(site => {
+                html += `<option value="${site}" ${site === selected ? 'selected' : ''}>${site}</option>`;
+            });
+            return html;
+        }
+        
+        // Format date for input fields
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Add new row for creating special day
+        function addNewRow() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'new-row';
+            
+            newRow.innerHTML = `
+                <td><select class="country-select">${getCountryOptions()}</select></td>
+                <td><input type="date" class="start-date" min="${new Date().toISOString().split('T')[0]}"></td>
+                <td><input type="date" class="end-date"></td>
+                <td><select class="title-select">${getHolidayOptions()}</select></td>
+                <td><select class="site-select">${getSiteOptions()}</select></td>
+                <td><input type="text" class="text-code-input" maxlength="7" placeholder="ABC-123"></td>
+                <td class="story-preview">Click Submit to load story</td>
+                <td class="action-buttons">
+                    <button class="btn btn-save" onclick="submitNewRow(this)">Submit</button>
+                    <button class="btn btn-cancel" onclick="cancelNewRow(this)">Cancel</button>
+                </td>
+            `;
+            
+            tbody.insertBefore(newRow, tbody.firstChild);
+            
+            // Add date validation
+            const startDate = newRow.querySelector('.start-date');
+            const endDate = newRow.querySelector('.end-date');
+            
+            startDate.addEventListener('change', function() {
+                endDate.min = this.value;
+                if (endDate.value && endDate.value < this.value) {
+                    endDate.value = this.value;
+                }
+            });
+        }
+        
+        // Submit new row
+        async function submitNewRow(btn) {
+            const row = btn.closest('tr');
+            const country = row.querySelector('.country-select').value;
+            const startDate = row.querySelector('.start-date').value;
+            const endDate = row.querySelector('.end-date').value;
+            const title = row.querySelector('.title-select').value;
+            const site = row.querySelector('.site-select').value;
+            const textCode = row.querySelector('.text-code-input').value.toUpperCase();
+            
+            // Validate all fields
+            if (!country || !startDate || !endDate || !title || !site || !textCode) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Validate text code format
+            if (!/^[A-Z]{3}-[A-Z0-9]{3}$/.test(textCode)) {
+                alert('Text code must be in format ABC-123 (3 letters, dash, 3 alphanumeric)');
+                return;
+            }
+            
+            // TODO: Save to Supabase here
+            console.log('Saving:', {country, startDate, endDate, title, site, textCode});
+            
+            // After successful save, fetch story data
+            await loadStoryPreview(row, textCode);
+            
+            // Convert to regular row
+            convertToDisplayRow(row, {
+                id: 'temp-' + Date.now(), // Temporary ID until saved
+                country,
+                start_date: startDate,
+                end_date: endDate,
+                title,
+                site,
+                text_code: textCode
+            });
+        }
+        
+        // Load story preview
+        async function loadStoryPreview(row, textCode) {
+            const previewCell = row.querySelector('.story-preview') || row.cells[6];
+            
+            // TODO: Fetch from Supabase stories table
+            // For now, showing placeholder
+            previewCell.innerHTML = `
+                <div class="story-preview">
+                    <img src="placeholder.jpg" width="55" height="55" alt="${textCode}">
+                    <div class="story-details">
+                        <strong>${textCode}</strong><br>
+                        Loading story details...
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Cancel new row
+        function cancelNewRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+        }
+        
+        // Convert to display row after save
+        function convertToDisplayRow(row, data) {
+            row.className = '';
+            row.innerHTML = `
+                <td>${data.country}</td>
+                <td>${formatDate(data.start_date)}</td>
+                <td>${formatDate(data.end_date)}</td>
+                <td>${data.title}</td>
+                <td>${data.site}</td>
+                <td>${data.text_code}</td>
+                <td class="story-preview">Loading...</td>
+                <td class="action-buttons">
+                    <button class="btn btn-edit" onclick="editRow('${data.id}')">Edit</button>
+                    <button class="btn btn-delete" onclick="deleteRow('${data.id}')">Delete</button>
+                </td>
+            `;
+        }
+        
+        // More functions to come...
+    </script>
+</body>
+</html>
