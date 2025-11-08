@@ -179,15 +179,28 @@
             margin-left: 5px;
             font-size: 12px;
         }
+		.update-dates-btn {
+		    margin: 0 0 20px 10px;
+		    padding: 10px 20px;
+		    background-color: #f44336;
+ 		   color: white;
+		    border: none;
+		    border-radius: 20px;
+		    cursor: pointer;
+		    font-size: 16px;
+}
+
+		
     </style>
 </head>
 <body>
     <h1>Days That Matter</h1>
     
     <button class="add-new-btn" onclick="addNewRow()">Add New Special Day</button>
+    <button class="update-dates-btn" onclick="updateAllPastDates()">UPDATE ALL PAST DATES</button>
     
     <div class="filters">
-        <strong style="margin-right: 20px;">Filter Days that Matter:</strong>
+        <strong style="margin-right: 20px;">Filter:</strong>
         <label for="siteFilter">Site:</label>
         <select id="siteFilter" onchange="filterTable()">
             <option value="ALL">ALL</option>
@@ -648,6 +661,153 @@
         tbody.innerHTML = '';
         rows.forEach(row => tbody.appendChild(row));
     }
+
+	// Calculate holidays that follow rules
+function calculateNextDate(title, currentYear) {
+    const nextYear = currentYear + 1;
+
+	// Search web for movable holiday dates
+async function searchHolidayDate(title, year) {
+    const searchQueries = {
+        'Easter': `Easter ${year} date`,
+        'Hanukkah': `Hanukkah ${year} start date end date`, 
+        'Passover': `Passover ${year} start date end date`
+    };
+    
+    // For now, return placeholder dates - you'll need to implement actual web search
+    // or use a holiday API service
+    const placeholderDates = {
+        'Easter': { 
+            2025: '2025-04-20', 
+            2026: '2026-04-05',
+            2027: '2027-03-28'
+        },
+        'Hanukkah': { 
+            2025: { start: '2025-12-14', end: '2025-12-22' },
+            2026: { start: '2026-12-04', end: '2026-12-12' }
+        },
+        'Passover': { 
+            2025: { start: '2025-04-12', end: '2025-04-20' },
+            2026: { start: '2026-04-01', end: '2026-04-09' }
+        }
+    };
+    
+    return placeholderDates[title]?.[year] || null;
+}
+
+    
+    switch(title) {
+        case 'Thanksgiving Day': // 4th Thursday in November
+            return getNthWeekdayOfMonth(nextYear, 10, 4, 4); // November, 4th, Thursday
+        case 'Labor Day': // 1st Monday in September  
+            return getNthWeekdayOfMonth(nextYear, 8, 1, 1); // September, 1st, Monday
+        case 'Memorial Day': // Last Monday in May
+            return getLastWeekdayOfMonth(nextYear, 4, 1); // May, Monday
+        case 'President\'s Day': // 3rd Monday in February
+            return getNthWeekdayOfMonth(nextYear, 1, 3, 1); // February, 3rd, Monday
+        case 'Mother\'s Day': // 2nd Sunday in May
+            return getNthWeekdayOfMonth(nextYear, 4, 2, 0); // May, 2nd, Sunday
+        case 'Father\'s Day': // 3rd Sunday in June
+            return getNthWeekdayOfMonth(nextYear, 5, 3, 0); // June, 3rd, Sunday
+        default:
+            return null;
+    }
+}
+
+// Helper: Get Nth occurrence of weekday in month
+function getNthWeekdayOfMonth(year, month, n, weekday) {
+    const firstDay = new Date(year, month, 1);
+    let dayOfWeek = firstDay.getDay();
+    let date = 1 + ((weekday - dayOfWeek + 7) % 7) + (n - 1) * 7;
+    return new Date(year, month, date).toISOString().split('T')[0];
+}
+
+// Helper: Get last occurrence of weekday in month
+function getLastWeekdayOfMonth(year, month, weekday) {
+    const lastDay = new Date(year, month + 1, 0);
+    let dayOfWeek = lastDay.getDay();
+    let daysBack = (dayOfWeek - weekday + 7) % 7;
+    return new Date(year, month, lastDay.getDate() - daysBack).toISOString().split('T')[0];
+}
+
+// Update all past dates
+async function updateAllPastDates() {
+    if (!confirm('This will update all past holiday dates to their next occurrence. Continue?')) {
+        return;
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    const needsWebSearch = ['Easter', 'Hanukkah', 'Passover'];
+    const needsCalculation = ['Thanksgiving Day', 'Labor Day', 'Memorial Day', 'President\'s Day', 'Mother\'s Day', 'Father\'s Day'];
+    
+    // Get all past special days
+    const { data: pastDays, error } = await supabase
+        .from('special_days')
+        .select('*')
+        .lt('start_date', today);
+    
+    if (error) {
+        alert('Error loading past dates: ' + error.message);
+        return;
+    }
+    
+    let updatedCount = 0;
+    
+    for (const day of pastDays) {
+        const currentYear = new Date(day.start_date).getFullYear();
+        let newStartDate, newEndDate;
+        
+ if (needsWebSearch.includes(day.title)) {
+    const nextYear = currentYear + 1;
+    const dateInfo = await searchHolidayDate(day.title, nextYear);
+    
+    if (dateInfo) {
+        if (typeof dateInfo === 'string') {
+            // Single day (Easter)
+            newStartDate = dateInfo;
+            newEndDate = dateInfo;
+        } else {
+            // Multi-day (Hanukkah, Passover)
+            newStartDate = dateInfo.start;
+            newEndDate = dateInfo.end;
+        }
+    } else {
+        console.log(`Could not find dates for ${day.title} ${nextYear}`);
+        continue;
+    }
+}
+
+        } else if (needsCalculation.includes(day.title)) {
+            newStartDate = calculateNextDate(day.title, currentYear);
+            newEndDate = newStartDate; // Most are single-day holidays
+        } else {
+            // Fixed date - just add 1 year
+            newStartDate = new Date(day.start_date);
+            newStartDate.setFullYear(currentYear + 1);
+            newStartDate = newStartDate.toISOString().split('T')[0];
+            
+            newEndDate = new Date(day.end_date);
+            newEndDate.setFullYear(currentYear + 1);
+            newEndDate = newEndDate.toISOString().split('T')[0];
+        }
+        
+        // Update in database
+        const { error: updateError } = await supabase
+            .from('special_days')
+            .update({ start_date: newStartDate, end_date: newEndDate })
+            .eq('id', day.id);
+        
+        if (!updateError) {
+            updatedCount++;
+        }
+    }
+    
+    alert(`Updated ${updatedCount} holiday dates!`);
+    loadSpecialDays(); // Refresh the table
+}
+
+	
+	
 </script>
 
             
