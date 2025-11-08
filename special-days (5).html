@@ -179,13 +179,26 @@
             margin-left: 5px;
             font-size: 12px;
         }
+		.update-dates-btn {
+    margin: 0 0 20px 10px;
+    padding: 10px 20px;
+    background-color: #f44336;  /* Red background */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+		
     </style>
 </head>
 <body>
     <h1>Days That Matter</h1>
     
     <button class="add-new-btn" onclick="addNewRow()">Add New Special Day</button>
-    
+	<button class="update-dates-btn" onclick="updateAllPastDates()">Update ALL Past Dates</button>
+	
     <div class="filters">
         <strong style="margin-right: 20px;">Filter Days that Matter:</strong>
         <label for="siteFilter">Site:</label>
@@ -679,6 +692,55 @@ async function updateAllPastDates() {
     
     alert(`Updated ${count} dates!`);
     location.reload();
+}
+// Update all past holiday dates to next year
+async function updateAllPastDates() {
+    // Ask user to confirm
+    if (!confirm('This will update all past dates to next year. Continue?')) {
+        return;  // Stop if they say no
+    }
+    
+    // Get today's date
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Get all special days with dates before today
+    const { data: pastDays, error } = await supabase
+        .from('special_days')
+        .select('*')
+        .lt('start_date', today);  // lt means "less than"
+    
+    if (error) {
+        alert('Error: ' + error.message);
+        return;
+    }
+    
+    let count = 0;  // Track how many we update
+    
+    // Loop through each past holiday
+    for (const day of pastDays) {
+        // Add 1 year to start date
+        const newStart = new Date(day.start_date);
+        newStart.setFullYear(newStart.getFullYear() + 1);
+        
+        // Add 1 year to end date
+        const newEnd = new Date(day.end_date);
+        newEnd.setFullYear(newEnd.getFullYear() + 1);
+        
+        // Update in database
+        await supabase
+            .from('special_days')
+            .update({ 
+                start_date: newStart.toISOString().split('T')[0],
+                end_date: newEnd.toISOString().split('T')[0]
+            })
+            .eq('id', day.id);
+            
+        count++;  // Count this update
+    }
+    
+    // Tell user and refresh page
+    alert(`Updated ${count} holiday dates!`);
+    location.reload();  // Refresh to show new dates
 }
 
 	
