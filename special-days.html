@@ -319,7 +319,13 @@
                 <td>${day.title}</td>
                 <td>${day.site}</td>
                 <td>${day.text_code}</td>
-                <td class="story-preview"></td>
+                td.story-preview {
+                  max-width: 300px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                 }
+
                 <td class="action-buttons">
                     <button class="btn btn-edit" onclick="editRow('${day.id}')">Edit</button>
                     <button class="btn btn-delete" onclick="deleteRow('${day.id}')">Delete</button>
