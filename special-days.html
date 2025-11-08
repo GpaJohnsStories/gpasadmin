@@ -306,32 +306,32 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         
-        specialDays.forEach(day => {
-            const row = document.createElement('tr');
-			// Check if date is in the past
-			if (day.start_date < new Date().toISOString().split('T')[0]) {
-    row.classList.add('past-date');
-}
-            row.innerHTML = `
-                <td>${day.country}</td>
-                <td>${formatDate(day.start_date)}</td>
-                <td>${formatDate(day.end_date)}</td>
-                <td>${day.title}</td>
-                <td>${day.site}</td>
-                <td>${day.text_code}</td>
-                <td class="story-preview"></td>
-                <td class="action-buttons">
-                    <button class="btn btn-edit" onclick="editRow('${day.id}')">Edit</button>
-                    <button class="btn btn-delete" onclick="deleteRow('${day.id}')">Delete</button>
-                    </td>
-            `;
-            tbody.appendChild(row);
-            console.log('Column 7:', row.cells[6].innerHTML, 'Column 8:', row.cells[7].innerHTML);
-
-            // Load story preview for this row
-            loadStoryPreview(row, day.text_code);
-        });
-    }
+specialDays.forEach(day => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${day.country}</td>
+        <td>${formatDate(day.start_date)}</td>
+        <td>${formatDate(day.end_date)}</td>
+        <td>${day.title}</td>
+        <td>${day.site}</td>
+        <td>${day.text_code}</td>
+        <td class="action-buttons">
+            <button class="btn btn-edit" onclick="editRow('${day.id}')">Edit</button>
+            <button class="btn btn-delete" onclick="deleteRow('${day.id}')">Delete</button>
+        </td>
+    `;
+    tbody.appendChild(row);
+    
+    // Create preview row
+    const previewRow = document.createElement('tr');
+    previewRow.innerHTML = `
+        <td colspan="2"></td>
+        <td colspan="5" class="story-preview" data-text-code="${day.text_code}">Loading...</td>
+    `;
+    tbody.appendChild(previewRow);
+    
+    loadStoryPreview(previewRow, day.text_code);
+});
     
     // Create country dropdown HTML
     function getCountryOptions(selected = 'US') {
