@@ -674,87 +674,123 @@
         rows.forEach(row => tbody.appendChild(row));
     }
 
-// Add this after your sortTable function
 async function updateAllPastDates() {
-    if (!confirm('Update all past holiday dates?')) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const { data: pastDays } = await supabase
-        .from('special_days')
-        .select('*')
-        .lt('start_date', today);
-    
-    let count = 0;
-    for (const day of pastDays) {
-        const newStart = new Date(day.start_date);
-        newStart.setFullYear(newStart.getFullYear() + 1);
-        
-        const newEnd = new Date(day.end_date);
-        newEnd.setFullYear(newEnd.getFullYear() + 1);
-        
-        await supabase
-            .from('special_days')
-            .update({ 
-                start_date: newStart.toISOString().split('T')[0],
-                end_date: newEnd.toISOString().split('T')[0]
-            })
-            .eq('id', day.id);
-        count++;
+    if (!confirm('This will update fixed and calculated dates. Web-search holidays will stay gray for manual update.')) {
+        return;
     }
     
-    alert(`Updated ${count} dates!`);
-    location.reload();
-}
-// Update all past holiday dates to next year
-async function updateAllPastDates() {
-    // Ask user to confirm
-    if (!confirm('This will update all past dates to next year. Continue?')) {
-        return;  // Stop if they say no
-    }
-    
-    // Get today's date
     const today = new Date().toISOString().split('T')[0];
     
-    // Get all special days with dates before today
+    // Define which holidays need calculations
+    const needsCalculation = ['Thanksgiving', 'Mother\'s Day', 'Father\'s Day', 'Memorial Day', 'Labor Day'];
+    
+    // Define which holidays need web search (skip these!)
+    const needsWebSearch = ['Easter', 'Passover', 'Hanukkah', 'Ramadan', 'Eid al-Fitr', 'Diwali', 'Chinese New Year'];
+    
     const { data: pastDays, error } = await supabase
         .from('special_days')
         .select('*')
-        .lt('start_date', today);  // lt means "less than"
+        .lt('start_date', today);
     
     if (error) {
         alert('Error: ' + error.message);
         return;
     }
     
-    let count = 0;  // Track how many we update
+    let count = 0;
+    let skipped = 0;
     
-    // Loop through each past holiday
     for (const day of pastDays) {
-        // Add 1 year to start date
-        const newStart = new Date(day.start_date);
-        newStart.setFullYear(newStart.getFullYear() + 1);
+        // Skip web-search holidays - leave them gray!
+        if (needsWebSearch.includes(day.title)) {
+            skipped++;
+            continue;
+        }
         
-        // Add 1 year to end date
-        const newEnd = new Date(day.end_date);
-        newEnd.setFullYear(newEnd.getFullYear() + 1);
+        let newStart, newEnd;
         
-        // Update in database
+        if (needsCalculation.includes(day.title)) {
+            // Calculate special dates
+            const year = new Date(day.start_date).getFullYear() + 1;
+            newStart = calculateHoliday(day.title, year);
+            newEnd = newStart;
+        } else {
+            // Fixed dates - just add 1 year
+            newStart = new Date(day.start_date);
+            newStart.setFullYear(newStart.getFullYear() + 1);
+            newStart = newStart.toISOString().split('T')[0];
+            
+            newEnd = new Date(day.end_date);
+            newEnd.setFullYear(newEnd.getFullYear() + 1);
+            newEnd = newEnd.toISOString().split('T')[0];
+        }
+        
         await supabase
             .from('special_days')
             .update({ 
-                start_date: newStart.toISOString().split('T')[0],
-                end_date: newEnd.toISOString().split('T')[0]
+                start_date: newStart,
+                end_date: newEnd
             })
             .eq('id', day.id);
             
-        count++;  // Count this update
+        count++;
     }
     
-    // Tell user and refresh page
-    alert(`Updated ${count} holiday dates!`);
-    location.reload();  // Refresh to show new dates
+    alert(`Updated ${count} dates!\n${skipped} holidays need manual update (still gray).`);
+    location.reload();
 }
 
+// Add this calculation function
+function calculateHoliday(holiday, year) {
+    const date = new Date(year, 0, 1); // Start with Jan 1
+    
+    switch(holiday) {
+        case 'Thanksgiving':
+            // 4th Thursday of November
+            date.setMonth(10); // November (0-based)
+            date.setDate(1);   // Start at Nov 1
+            // Find first Thursday
+            while (date.getDay() !== 4) date.setDate(date.getDate() + 1);
+            // Add 3 weeks for 4th Thursday
+            date.setDate(date.getDate() + 21);
+            break;
+            
+        case 'Mother\'s Day':
+            // 2nd Sunday of May
+            date.setMonth(4); // May
+            date.setDate(1);
+            // Find first Sunday
+            while (date.getDay() !== 0) date.setDate(date.getDate() + 1);
+            // Add 1 week for 2nd Sunday
+            date.setDate(date.getDate() + 7);
+            break;
+            
+        case 'Father\'s Day':
+            // 3rd Sunday of June
+            date.setMonth(5); // June
+            date.setDate(1);
+            while (date.getDay() !== 0) date.setDate(date.getDate() + 1);
+            date.setDate(date.getDate() + 14); // Add 2 weeks for 3rd
+            break;
+            
+        case 'Memorial Day':
+            // Last Monday of May
+            date.setMonth(4); // May
+            date.setDate(31); // Start at end
+            // Work backwards to find last Monday
+            while (date.getDay() !== 1) date.setDate(date.getDate() - 1);
+            break;
+            
+        case 'Labor Day':
+            // 1st Monday of September
+            date.setMonth(8); // September
+            date.setDate(1);
+            while (date.getDay() !== 1) date.setDate(date.getDate() + 1);
+            break;
+    }
+    
+    return date.toISOString().split('T')[0];
+}
 	
 </script>
 
