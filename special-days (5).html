@@ -292,7 +292,7 @@
         specialDays.forEach(day => {
             const row = document.createElement('tr');
 			// Check if date is in the past
-			if (specialDay.start_date < new Date().toISOString().split('T')[0]) {
+			if (Day.start_date < new Date().toISOString().split('T')[0]) {
     row.classList.add('past-date');
 }
             row.innerHTML = `
