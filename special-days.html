@@ -351,6 +351,46 @@ tr.past-date:hover {
     </table>
     
 <script>
+
+    function editRow(id) {
+    const day = specialDays.find(d => d.id === id);
+    if (!day) return;
+    
+    // Store which row we're editing
+    editingRow = id;
+    
+    // Find the table rows for this entry
+    const rows = document.querySelectorAll('#tableBody tr');
+    let mainRow, storyRow;
+    
+    // Find the correct row pair
+    for (let i = 0; i < rows.length; i += 2) {
+        if (rows[i].innerHTML.includes(id)) {
+            mainRow = rows[i];
+            storyRow = rows[i + 1];
+            break;
+        }
+    }
+    
+    if (!mainRow) return;
+    
+    // Convert cells to editable inputs
+    mainRow.cells[0].innerHTML = getCountryOptions(day.country);  // Country dropdown
+    mainRow.cells[1].innerHTML = `<select>${sites.map(s => 
+        `<option ${s === day.site ? 'selected' : ''}>${s}</option>`).join('')}</select>`;  // Site dropdown
+    mainRow.cells[2].innerHTML = `<input type="date" value="${day.start_date}">`;
+    mainRow.cells[3].innerHTML = `<input type="date" value="${day.end_date}">`;
+    mainRow.cells[4].innerHTML = `<select>${holidays.map(h => 
+        `<option ${h === day.title ? 'selected' : ''}>${h}</option>`).join('')}</select>`;  // Title dropdown
+    mainRow.cells[6].innerHTML = `<input class="text-code-input" value="${day.text_code}" maxlength="7">`;
+    
+    // Change buttons to Save/Cancel
+    mainRow.cells[8].innerHTML = `
+        <button class="btn btn-save" onclick="saveRow('${id}')" title="Save">💾</button>
+        <button class="btn btn-cancel" onclick="cancelEdit()" title="Cancel">❌</button>
+    `;
+}
+
     // Country list with US at top
     const countries = ['US', 'Australia', 'Austria', 'Canada', 'England', 'France', 'Germany', 'Ireland', 'Japan', 'Mexico', 'Netherlands', 'Norway', 'Russia', 'Scotland', 'Spain'];
     
