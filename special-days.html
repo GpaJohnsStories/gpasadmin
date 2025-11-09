@@ -375,7 +375,7 @@ tr.past-date:hover {
     if (!mainRow) return;
     
     // Convert cells to editable inputs
-    mainRow.cells[0].innerHTML = getCountryOptions(day.country);  // Country dropdown
+    mainRow.cells[0].innerHTML = `<select>${getCountryOptions(day.country)}</select>`;  // Country dropdown
     mainRow.cells[1].innerHTML = `<select>${sites.map(s => 
         `<option ${s === day.site ? 'selected' : ''}>${s}</option>`).join('')}</select>`;  // Site dropdown
     mainRow.cells[2].innerHTML = `<input type="date" value="${day.start_date}">`;
