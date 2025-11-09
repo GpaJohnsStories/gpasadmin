@@ -471,8 +471,7 @@ function addNewRow() {
         }
     });
 }
-
-********************    
+  
 // Submit new row - TWO-ROW VERSION
 async function submitNewRow(btn) {
     // Get the parent row (row1) and the next row (row2)
@@ -523,17 +522,23 @@ async function submitNewRow(btn) {
     // Refresh the entire display with new data
     displaySpecialDays();
 }
+// Cancel new row - TWO-ROW VERSION
+function cancelNewRow(btn) {
+    // Get both rows
+    const row1 = btn.closest('tr');
+    const row2 = row1.nextElementSibling;
+    
+    // Remove both rows
+    row1.remove();
+    row2.remove();
+}
 
-*********************************
-    // Cancel edit
-    function cancelEdit(id) {
-        const day = specialDays.find(d => d.id === id);
-        if (!day) return;
-        
-        convertToDisplayRow(editingRow, day);
-        loadStoryPreview(editingRow, day.text_code);
-        editingRow = null;
-    }
+// Cancel edit - TWO-ROW VERSION
+function cancelEdit(id) {
+    // Simply refresh the display to restore original state
+    displaySpecialDays();
+    editingRow = null;
+}
     
 // Delete row - TWO-ROW VERSION
 async function deleteRow(id) {
