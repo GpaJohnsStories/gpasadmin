@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="google" content="notranslate">
   <title>Admin Menu</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@700&family=Kalam:wght@700&display=swap');
+    
     body {
       margin: 0;
       font-family: Lexend, sans-serif;
@@ -12,7 +15,7 @@
     /* Ribbon container: 20 menu columns × 1 row, each cell 70px wide × 68px tall */
     .menu {
       display: grid;
-      grid-template-columns: 60px 60px repeat(7, 70px) 20px repeat(10, 70px); /* cols 1-2: 50px, cols 3-9: 70px, col 10: 10px, cols 11-2: 70px */
+      grid-template-columns: 60px 60px repeat(7, 70px) 120px repeat(8, 70px); /* cols 1-2: 60px, cols 3-9: 70px, cols 11-18: 70px */
       grid-template-rows: 68px;
       width: 1330px;              /* 20 × 70px */
       height: 68px;
@@ -50,6 +53,25 @@
       line-height: 68px;          /* vertically center in 68px row */
       margin: 0;
     }
+
+    /* Site dropdown styling */
+    #siteDropdown {
+      width: 100px;
+      height: 58px;
+      font-family: 'Kalam', cursive;
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 29px;
+      padding: 0 10px;
+      box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+      background: #DC143C;
+      color: #FFD700;
+      cursor: pointer;
+      margin: 5px auto;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -61,10 +83,10 @@
     <a href="file:///G:/My%20Drive/000%20-%20GPAS%20WEBS/all-sites/admin/pages/admin-dash.html" target="_self" style="background:#dc2626;">Dash<br>Board</a>
 
     <!-- Column 4: Super Text -->
-    <a href="https://gpaskids.com/buddys_admin/super-text" target=_blank" style="background:#16a34a;">Super<br>Text</a>
+    <a href="https://gpaskids.com/buddys_admin/super-text" target="_blank" style="background:#16a34a;">Super<br>Text</a>
 
     <!-- Column 5: Spcl Days -->
-<a href="file:///G:/My%20Drive/000%20-%20GPAS%20WEBS/all-sites/admin/pages/special-days.html" target="_self" style="background:#16a34a;">Spcl<br>Days</a>
+    <a href="file:///G:/My%20Drive/000%20-%20GPAS%20WEBS/all-sites/admin/pages/special-days.html" target="_self" style="background:#16a34a;">Spcl<br>Days</a>
 
     <!-- Column 6: Story Table -->
     <a href="https://gpaskids.com/buddys_admin/stories" target="_blank" style="background:#16a34a;">Story<br>Tbl</a>
@@ -72,15 +94,21 @@
     <!-- Column 7: Ref Tables -->
     <a href="https://gpaskids.com/buddys_admin/reference" target="_blank">Ref<br>Tbls</a>
 
-    <!-- Column 8: Manuals -->
+    <!-- Column 8: Docs & Manuals -->
     <a href="https://gpaskids.com/buddys_admin/manual" target="_blank">Docs</a>
 
     <!-- Column 9: Back Ups -->
     <a href="https://gpaskids.com/buddys_admin" target="_blank" style="background:#8b0000;">System<br>Tasks</a>
 
-<!-- Col 10: Divider between Admin Pages and live pages-->
-      <div><center>*<br>*<br>*</center></div>
-<!-- Column 11: Kid's Home -->
+    <!-- Column 10: Website Drop Down Box -->
+    <select id="siteDropdown">
+      <option value="" selected>SITE?</option>
+      <option value="KIDS" style="background:#f97316; color:#ffffff;">KIDS</option>
+      <option value="FAITH" style="background:#228b22; color:#ffffff;">FAITH</option>
+      <option value="SHOP" style="background:#a0522d; color:#ffffff;">SHOP</option>
+    </select>
+      
+    <!-- Column 11: Kid's Home -->
     <a href="https://gpaskids.com/" target="_blank" style="background:#f97316; color:#ffffff;">
       Kid's<br>🏠
     </a>
@@ -108,21 +136,53 @@
     <!-- Column 16: BLANK -->
     <div># 16</div>
 
-    <!-- Column 17: BLANK -->
-    <div># 17</div>
-
-    <!-- Column 18: BLANK -->
-    <div># 18</div>
-
-    <!-- Column 19: BLANK -->
-     <a href="https://supabase.com/dashboard/project/hlywucxwpzbqmzssmwpj" target="_blank" style="background:#f3e303; color:#037f1c;">
+    <!-- Column 17: Supabase -->
+    <a href="https://supabase.com/dashboard/project/hlywucxwpzbqmzssmwpj" target="_blank" style="background:#f3e303; color:#037f1c;">
       SUPA<br>BASE
     </a>
 
-    <!-- Column 20: BLANK --> 
-     <a href="https://github.com/" target="_blank" style="background:#037f1c; color:#ffffff;">
+    <!-- Column 18: Github --> 
+    <a href="https://github.com/" target="_blank" style="background:#037f1c; color:#ffffff;">
       GIT<br>HUB
     </a>
   </div>
-</body>
-</html>
+
+<script>
+  const dropdown = document.getElementById('siteDropdown');
+  
+  // Load saved selection when page loads
+  const saved = localStorage.getItem('selectedSite');
+  if (saved) {
+    dropdown.value = saved;
+    // Update colors based on saved value
+    switch(saved) {
+      case 'KIDS': dropdown.style.background = '#f97316'; dropdown.style.color = '#ffffff'; break;
+      case 'FAITH': dropdown.style.background = '#228b22'; dropdown.style.color = '#ffffff'; break;
+      case 'SHOP': dropdown.style.background = '#a0522d'; dropdown.style.color = '#ffffff'; break;
+    }
+  }
+  
+  // Save selection when changed
+  dropdown.addEventListener('change', function() {
+    const site = this.value;
+    if (!site) {
+      dropdown.style.background = '#DC143C';
+      dropdown.style.color = '#FFD700';
+      return;
+    }
+    switch(site) {
+      case 'KIDS': dropdown.style.background = '#f97316'; break;
+      case 'FAITH': dropdown.style.background = '#228b22'; break;
+      case 'SHOP': dropdown.style.background = '#a0522d'; break;
+    }
+    dropdown.style.color = '#ffffff';
+    
+    // Save to localStorage
+    localStorage.setItem('selectedSite', site);
+    
+    // Tell parent window if we're in an iframe
+    if (window.parent !== window) {
+      window.parent.selectedSite = site;
+    }
+  });
+</script>
