@@ -15,8 +15,8 @@
     /* Ribbon container: 18 menu columns × 1 row, each cell 70px wide × 68px tall */
     .menu {
       display: grid;
-      grid-template-columns: 80px 60px repeat(7, 72px) 120px repeat(7, 72px); /* cols 1-2: 8060px, cols 3-9: 70px, cols 11-17: 70px */
-      grid-template-rows: 100px;
+      grid-template-columns: 100px repeat(8, 70px) 120px repeat(7, 70px); /* cols 1: 100px, cols 2-9: 70px, col 10: 120px, cols 11-17: 70px */
+      grid-template-rows: 80px;
       width: 1700px;              /* screen showing @ 150% */
       height: 80px;
       margin: 0 auto;
@@ -34,7 +34,7 @@
       align-items: center;
       border-radius: 32px;
       text-align: center;
-      font-size: 18px;
+      font-size: 16px;
       font-family: Lexend, sans-serif;
       font-weight: bold;  
       text-decoration: none;
@@ -43,14 +43,14 @@
       background: #1e40af;
     }
 
-    /* Title cell styling: spans 2 columns */
+    /* Col 1Title cell styling: */
     .menu h1 {
-      grid-column: 1 / span 2;    /* merge col 1 + col 2 */
+      grid-column: 1    
       font-family: Kalam, cursive;
       font-size: 32px;
       color: #ffffff;
       text-align: center;
-      line-height: 100px;          /* vertically center in 68px row */
+      line-height: 80px;          /* vertically center in 68px row */
       margin: 0;
     }
 
@@ -183,6 +183,7 @@
     }
   });
 </script>
+
 
 
 
