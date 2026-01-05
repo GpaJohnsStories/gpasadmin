@@ -17,7 +17,7 @@
       display: grid;
       grid-template-columns: 100px repeat(8, 70px) 120px repeat(7, 70px); /* cols 1: 100px, cols 2-9: 70px, col 10: 120px, cols 11-17: 70px */
       grid-template-rows: 80px;
-      width: 1100px;              /* screen showing @ 150% */
+      width: 1250px;              /* screen showing @ 150% */
       height: 80px;
       margin: 0 auto;
       background: #2665ec;
@@ -43,22 +43,21 @@
       background: #1e40af;
     }
 
-    /* Col 1Title cell styling: */
+    /* Col 1 - Title cell styling: */
     .menu h1 {
       grid-column: 1    
       font-family: Kalam, cursive;
       font-size: 28px;
       color: #ffffff;
       text-align: left;           /* Align title left */
-      line-height: 80px;          /* vertically center in 68px row */
+      line-height: 65px;          /* vertically center in 65px row */
       margin: 5;
     }
 
     /* Site dropdown styling */
     #siteDropdown {
-      width: 90px;
+      width: 75px;
       height: 75px;
-      /* font-family: 'Kalam', cursive; */
       font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
@@ -119,7 +118,7 @@
     </a>
 
     <!-- Column 13: Shop Home -->
-    <a href="https://gpaskids.com/" target="_blank" style="background:#f97316; color:#ffffff;">
+    <a href="https://gpaskids.com/" target="_blank" style="background:#a0522d; color:#ffffff;">
       <span style="font-size:42px;">👕</span>
     </a>
 
@@ -133,15 +132,16 @@
       +<br>Prods
     </a>
 
+    <!-- Column 17: Github --> 
+    <a href="https://github.com/" target="_blank" style="background:#037f1c; color:#ffffff;">
+      GIT<br>HUB
+    </a>
+    
     <!-- Column 16: Supabase -->
     <a href="https://supabase.com/dashboard/project/hlywucxwpzbqmzssmwpj" target="_blank" style="background:#f3e303; color:#037f1c;">
       SUPA<br>BASE
     </a>
 
-    <!-- Column 17: Github --> 
-    <a href="https://github.com/" target="_blank" style="background:#037f1c; color:#ffffff;">
-      GIT<br>HUB
-    </a>
   </div>
 
 <script>
@@ -183,6 +183,7 @@
     }
   });
 </script>
+
 
 
 
