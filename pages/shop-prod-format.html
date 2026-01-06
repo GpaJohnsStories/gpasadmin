@@ -147,7 +147,7 @@
   </div>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/01-1</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/06-1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -279,27 +279,23 @@
   <!-- ============================================================= -->
   <script>
 
-    /* --------------------------------------------------------------
-       DESCRIPTION CHARACTER COUNTER
-       -------------------------------------------------------------- */
-    const desc = document.getElementById('desc');
-    const descCounter = document.getElementById('descCounter');
+/* --------------------------------------------------------------
+   DESCRIPTION CHARACTER COUNTER
+-------------------------------------------------------------- */
+const desc = document.getElementById('desc');
+const descCounter = document.getElementById('descCounter');
 
-    desc.addEventListener('input', () => {
-      descCounter.textContent = desc.value.length + ' / 600';
-    });
+desc.addEventListener('input', () => {
+  descCounter.textContent = desc.value.length + ' / 600';
+});
 
 
-    /* --------------------------------------------------------------
-       PRODUCT CODE VALIDATION
-       --------------------------------------------------------------
-       Rules:
-       - Always uppercase
-       - Only A-Z and 0-9 allowed
-       - Dash allowed ONLY after first 3 characters
-       - No spaces, no symbols
-       -------------------------------------------------------------- */
-  // Keep the product code normalized as III-SSS
+/* --------------------------------------------------------------
+   PRODUCT CODE VALIDATION
+   - Always uppercase
+   - Only A-Z and 0-9 allowed
+   - Dash allowed ONLY after first 3 characters
+-------------------------------------------------------------- */
 function validateCode(input) {
   let v = input.value.toUpperCase();
 
@@ -315,15 +311,23 @@ function validateCode(input) {
     input.value = "";
     return;
   }
-// Keep $ and , out of price
-function validatePrice(input) {
-  // Remove $ and commas
-  let v = input.value.replace(/[$,]/g, "");
 
-  // Allow only digits and one decimal point
+  // Rebuild as III or III- or III-SSS
+  let result = left;
+  if (right || v.includes("-")) result += "-";
+  if (right) result += right;
+
+  input.value = result;
+}
+
+
+/* --------------------------------------------------------------
+   PRICE VALIDATION
+-------------------------------------------------------------- */
+function validatePrice(input) {
+  let v = input.value.replace(/[$,]/g, "");
   v = v.replace(/[^0-9.]/g, "");
 
-  // Prevent more than one decimal point
   const parts = v.split(".");
   if (parts.length > 2) {
     v = parts[0] + "." + parts[1];
@@ -333,46 +337,29 @@ function validatePrice(input) {
 }
 
 
-  // Rebuild as III or III- or III-SSS depending on what we have
-  let result = left;
-  if (right || v.includes("-")) {
-    result += "-";
-  }
-  if (right) {
-    result += right;
-  }
+/* --------------------------------------------------------------
+   LIVE PRODUCT CODE BUILDER — IP1-### FORMAT
+-------------------------------------------------------------- */
+const interest = document.getElementById('interest');
+const ptype    = document.getElementById('ptype');
+const pcode    = document.getElementById('pcode');
 
-  input.value = result;
-}
-
-    /* --------------------------------------------------------------
-     LIVE PRODUCT CODE BUILDER — IP1-### FORMAT
-     -------------------------------------------------------------- */
-
-  const interest = document.getElementById('interest');
-  const ptype    = document.getElementById('ptype');
-  const pcode = document.getElementById('pcode');
-  interest.addEventListener('change', buildCodePrefix);
-  ptype.addEventListener('change', buildCodePrefix);
+interest.addEventListener('change', buildCodePrefix);
+ptype.addEventListener('change', buildCodePrefix);
 
 function buildCodePrefix() {
-  const i = interest.value.toUpperCase();  // F, U, A
-  const t = ptype.value.toUpperCase();     // B, T, O, E
+  const i = interest.value.toUpperCase();
+  const t = ptype.value.toUpperCase();
 
-  // If either dropdown is empty, clear code
   if (!i || !t) {
     pcode.value = "";
     return;
   }
 
-  // Build the prefix: III (Interest + Type + "1")
   const prefix = i + t + "1";
-
-  // Set base prefix with dash (e.g., FB1-)
   pcode.value = prefix + "-";
   validateCode(pcode);
 
-  // Now auto-generate the numeric suffix by looking at GitHub
   fetchNextSuffix(prefix)
     .then(nextSuffix => {
       pcode.value = prefix + "-" + nextSuffix;
@@ -380,58 +367,45 @@ function buildCodePrefix() {
     })
     .catch(err => {
       console.error("Error fetching next suffix:", err);
-      // Fallback if something goes wrong: default to 001
       pcode.value = prefix + "-001";
       validateCode(pcode);
     });
 }
 
-  const formatBtn = document.getElementById('formatBtn');
-  const previewBox = document.getElementById('previewBox');
-  
-  async function fetchNextSuffix(prefix) {
-  // GitHub API URL for the /prod directory
+
+/* --------------------------------------------------------------
+   FETCH NEXT AVAILABLE SUFFIX FROM GITHUB
+-------------------------------------------------------------- */
+async function fetchNextSuffix(prefix) {
   const apiUrl = "https://api.github.com/repos/GpaJohnsStories/GpasShop/contents/prod";
 
   const response = await fetch(apiUrl);
-  if (!response.ok) {
-    throw new Error("GitHub API error: " + response.status);
-  }
+  if (!response.ok) throw new Error("GitHub API error: " + response.status);
 
   const files = await response.json();
-
-  // We expect an array of objects with a 'name' field
-  if (!Array.isArray(files)) {
-    throw new Error("Unexpected GitHub response format");
-  }
+  if (!Array.isArray(files)) throw new Error("Unexpected GitHub response format");
 
   const regex = new RegExp("^" + prefix + "-?(\\d{3})\\.html$", "i");
-
   let maxSuffix = 0;
 
   for (const item of files) {
     if (!item || !item.name) continue;
 
-    const name = item.name; // e.g., "FB1-003.html"
-    const match = name.match(regex);
+    const match = item.name.match(regex);
     if (match && match[1]) {
       const num = parseInt(match[1], 10);
-      if (!isNaN(num) && num > maxSuffix) {
-        maxSuffix = num;
-      }
+      if (!isNaN(num) && num > maxSuffix) maxSuffix = num;
     }
   }
 
-  // If no matches, start at 1 (001)
-  const next = maxSuffix + 1;
-
-  // Return as a 3-digit string, e.g., "001", "012", "105"
-  return String(next).padStart(3, "0");
+  return String(maxSuffix + 1).padStart(3, "0");
 }
 
 
-  /* Converts dangerous characters into safe HTML entities */
-  function escapeForHTML(str) {
+/* --------------------------------------------------------------
+   ESCAPE HTML ENTITIES
+-------------------------------------------------------------- */
+function escapeForHTML(str) {
   if (!str) return "";
   return str
     .replace(/&/g, "&amp;")
@@ -442,14 +416,20 @@ function buildCodePrefix() {
 }
 
 
+/* --------------------------------------------------------------
+   FORMAT BUTTON → BUILD PREVIEW
+-------------------------------------------------------------- */
+const formatBtn = document.getElementById('formatBtn');
+const previewBox = document.getElementById('previewBox');
+
 formatBtn.addEventListener('click', () => {
-  if (validateBeforeFormat()) {
-    buildPreview();
-  }
+  if (validateBeforeFormat()) buildPreview();
 });
 
-// Validate Required Info Is Present
 
+/* --------------------------------------------------------------
+   VALIDATE REQUIRED FIELDS BEFORE FORMATTING
+-------------------------------------------------------------- */
 function validateBeforeFormat() {
   const code  = document.getElementById('pcode').value.trim();
   const url   = document.getElementById('purl').value.trim();
@@ -458,31 +438,26 @@ function validateBeforeFormat() {
   const desc  = document.getElementById('desc').value.trim();
   const cost  = document.getElementById('cost').value.trim();
 
-  // Product Code: must be exactly III-SSS
   if (!/^[A-Z0-9]{3}-\d{3}$/.test(code)) {
-    alert("Product Code must be in the format III-SSS (example: FB1-001).");
+    alert("Product Code must be III-SSS (example: FB1-001).");
     return false;
   }
 
-  // Product Link URL required
   if (url.length < 5) {
     alert("Product Link URL is required.");
     return false;
   }
 
-  // Title required
   if (title.length < 1) {
     alert("Product Title is required.");
     return false;
   }
 
-  // Description required
   if (desc.length < 1) {
     alert("Description is required.");
     return false;
   }
 
-  // Price optional — but if entered, must be numeric
   if (cost && !/^\d+(\.\d{1,2})?$/.test(cost)) {
     alert("Price must be a number like 12.99 (no $ sign).");
     return false;
@@ -491,127 +466,134 @@ function validateBeforeFormat() {
   return true;
 }
 
-  function buildPreview() {
 
-    // Collect all field values
-    const code  = escapeForHTML(document.getElementById('pcode').value.trim());
-    const url   = escapeForHTML(document.getElementById('purl').value.trim());
-    const img   = escapeForHTML(document.getElementById('imgurl').value.trim());
-    const title = escapeForHTML(document.getElementById('title').value.trim());
-	const cost  = escapeForHTML(document.getElementById('cost').value.trim());
-    const desc  = escapeForHTML(document.getElementById('desc').value.trim());
-    const tags  = escapeForHTML(document.getElementById('tags').value.trim());
+/* --------------------------------------------------------------
+   BUILD PREVIEW CARD
+-------------------------------------------------------------- */
+function buildPreview() {
+  const code  = escapeForHTML(document.getElementById('pcode').value.trim());
+  const url   = escapeForHTML(document.getElementById('purl').value.trim());
+  const img   = escapeForHTML(document.getElementById('imgurl').value.trim());
+  const title = escapeForHTML(document.getElementById('title').value.trim());
+  const cost  = escapeForHTML(document.getElementById('cost').value.trim());
+  const desc  = escapeForHTML(document.getElementById('desc').value.trim());
+  const tags  = escapeForHTML(document.getElementById('tags').value.trim());
 
-    // Build the HTML card (inline attributes only)
   const cardHTML = `
-<div style="width:350px; 
-  border:5px solid #c8c8c8; 
-  border-radius:14px; 
-  box-shadow:4px 4px 8px rgba(0,0,0,0.25); 
-  padding:12px; background-color:#fdfdf4;">
+<div style="width:350px; border:5px solid #c8c8c8; border-radius:14px; box-shadow:4px 4px 8px rgba(0,0,0,0.25); padding:12px; background-color:#fdfdf4;">
   <a href="${url}" target="_blank" style="text-decoration:none; color:black;">
     <img src="${img}" alt="${title}" style="width:100%; height:auto; border:0;">
     <h3 style="margin:10px 0 5px 0; font-size:22px; text-align:center;">${title}</h3>
     <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 10px 0;">
-        <span style="font-size:21px; font-weight:bold;">${escapeForHTML(pcode.value.trim())}</span>
+        <span style="font-size:21px; font-weight:bold;">${code}</span>
         <span style="font-size:21px; font-weight:normal; text-align:right;">$${cost}</span>
     </div>
-
-
     <p style="margin:0 0 10px 0; font-size:18px; line-height:1.3;">${desc}</p>
     <p style="margin:0; font-size:14px; color:#666;">Tags: ${tags}</p>
   </a>
 </div>`;
 
+  previewBox.innerHTML = cardHTML;
+  window.finalProductHTML = cardHTML;
+}
 
-
-    // Show preview in Column 3
-    previewBox.innerHTML = cardHTML;
-
-    // Store the HTML so SAVE can write it to file later
-    window.finalProductHTML = cardHTML;
-  }
 
 /* --------------------------------------------------------------
-   SAVE PRODUCT LISTING AS A DOWNLOADABLE HTML FILE
-   --------------------------------------------------------------
-   - Creates a complete .html file
-   - Filename = product code (IP1-???.html)
-   - Includes a timestamp comment
-   - Contains ONLY the product card HTML
-   - Browser downloads the file
+   SAVE BUTTON HANDLER
 -------------------------------------------------------------- */
-
 const saveBtn = document.getElementById('saveBtn');
 saveBtn.addEventListener('click', saveProductFile);
 
-function saveProductFile() {
 
-  // Ensure preview was generated
+/* ================================================================
+   GITHUB TOKEN HANDLING (ADMIN SECURITY FLOW)
+================================================================ */
+function requireToken() {
+  let token = sessionStorage.getItem("githubToken");
+  if (token) return token;
+
+  alert("A GitHub token is required.\nPlease click the FUN IDEAS button in the admin menu.");
+  return null;
+}
+
+
+/* --------------------------------------------------------------
+   SAVE PRODUCT FILE DIRECTLY TO GITHUB
+-------------------------------------------------------------- */
+async function saveProductFile() {
+
   if (!window.finalProductHTML) {
     alert("Please click FORMAT before saving.");
     return;
   }
 
-  // Get product code for filename
   const code = document.getElementById('pcode').value.trim();
-
-  // Must be exactly III-SSS (3 alnum, dash, 3 digits)
   if (!/^[A-Z0-9]{3}-\d{3}$/.test(code)) {
-    alert("Product code must look like FB1-001 (3 letters/numbers, dash, 3 digits).");
+    alert("Product code must look like FB1-001.");
     return;
   }
 
-
-  const filename = code + ".html";
-
-  // Timestamp
+  const cost = document.getElementById('cost').value.trim();
   const now = new Date().toISOString();
+
   const timestampComment = "<!-- date_added: " + now + " -->\n\n";
-  const priceComment = "<!-- price: " + cost + " -->\n";
+  const priceComment     = "<!-- price: " + cost + " -->\n";
 
-
-  // Build full HTML file content
   const fileContent =
-    "<!DOCTYPE html>\n" +
-    "<html>\n" +
-    "<head>\n" +
+    "<!DOCTYPE html>\n<html>\n<head>\n" +
     "  <meta charset='UTF-8'>\n" +
     "  <title>" + code + "</title>\n" +
-    "</head>\n" +
-    "<body>\n" +
+    "</head>\n<body>\n" +
     timestampComment +
     priceComment +
     window.finalProductHTML +
     "\n</body>\n</html>";
 
-  // Create a downloadable blob
-  const blob = new Blob([fileContent], { type: "text/html" });
-  const url = URL.createObjectURL(blob);
+  const token = requireToken();
+  if (!token) return;
 
-  // Create a temporary link to trigger download
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
+  const filename = `${code}.html`;
+  const filePath = `prod/${filename}`;
+  const contentBase64 = btoa(unescape(encodeURIComponent(fileContent)));
 
-  // Cleanup
-  URL.revokeObjectURL(url);
-}  // ← THIS closes saveProductFile correctly
+  let sha = null;
+  const checkUrl = `https://api.github.com/repos/GpaJohnsStories/GpasShop/contents/${filePath}`;
 
+  try {
+    const checkResp = await fetch(checkUrl, {
+      headers: { "Authorization": `token ${token}` }
+    });
+    if (checkResp.ok) {
+      const data = await checkResp.json();
+      sha = data.sha;
+    }
+  } catch (err) {
+    console.error("Error checking file:", err);
+  }
 
-    /* --------------------------------------------------------------
-       TODO: ADD YOUR LOGIC HERE
-       --------------------------------------------------------------
-       - Auto-fill dropdowns when code is typed
-       - Auto-generate code when dropdowns change
-       - Format preview HTML
-       - Load product from /prod/IP1-???.html
-       - Save product to /prod/IAT-???.html
-       - Delete product with confirmation
-       -------------------------------------------------------------- */
+  const uploadResp = await fetch(checkUrl, {
+    method: "PUT",
+    headers: {
+      "Authorization": `token ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: `Save product ${filename}`,
+      content: contentBase64,
+      sha: sha || undefined
+    })
+  });
 
-  </script>
+  if (uploadResp.ok) {
+    alert(`Saved to GitHub:\nprod/${filename}`);
+  } else {
+    const errData = await uploadResp.json();
+    alert("GitHub save failed:\n" + JSON.stringify(errData, null, 2));
+  }
+}
+
+</script>
 
 </body>
 </html>
+
