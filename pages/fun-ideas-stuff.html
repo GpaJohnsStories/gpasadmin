@@ -83,7 +83,8 @@
         timestamp: Date.now()
       };
 
-      sessionStorage.setItem("githubAuth", JSON.stringify(payload));
+      // Token is valid — store it for this session
+          sessionStorage.setItem("githubToken", idea);
 
       // Notify opener and close
       window.opener.postMessage({ type: "githubTokenReady" }, "*");
@@ -97,4 +98,5 @@
 
 </body>
 </html>
+
 
