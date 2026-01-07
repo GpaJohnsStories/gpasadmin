@@ -170,6 +170,17 @@
     <button id="clearBtn">CLEAR FORM</button>
   </div>
 
+<div class="inline-buttons" style="margin-top:20px;">
+  <button id="saveBtn" style="background-color:#228B22; color:white;">SAVE LISTING</button>
+  <button id="saveClearBtn" style="background-color:#cc0000; color:white;">SAVE & CLEAR</button>
+</div>
+
+<div style="margin-top:10px;">
+  <button id="deleteBtn" style="background-color:#cc0000; color:white;">DELETE LISTING</button>
+</div>
+
+
+	
   <h3>Build Product Code</h3>
 
   <!-- INTEREST -->
@@ -264,11 +275,7 @@
           <!-- formatted preview will appear here -->
         </div><br>
 
-        <!-- SAVE + DELETE ON SAME LINE -->
-        <div class="inline-buttons">
-          <button id="saveBtn">SAVE LISTING</button>
-          <button id="deleteBtn">DELETE LISTING</button>
-        </div>
+
       </td>
 
     </tr>
@@ -592,10 +599,29 @@ async function saveProductFile() {
   }
 }
 
+	  document.getElementById("saveBtn").addEventListener("click", () => {
+  saveProductFile(); // your existing save logic
+  alert("Product saved!");
+});
+
+	document.getElementById("saveClearBtn").addEventListener("click", () => {
+  saveProductFile();
+  alert("Product saved!");
+  if (confirm("Clear all fields?")) clearFormFields();
+});
+
+	  document.getElementById("deleteBtn").addEventListener("click", () => {
+  if (confirm("Delete this product file?")) {
+    deleteProductFile(); // your GitHub delete logic
+    alert("Product deleted.");
+  }
+});
+
 </script>
 
 </body>
 </html>
+
 
 
 
