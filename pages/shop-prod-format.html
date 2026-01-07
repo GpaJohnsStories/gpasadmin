@@ -509,7 +509,7 @@ saveBtn.addEventListener('click', saveProductFile);
    GITHUB TOKEN HANDLING (ADMIN SECURITY FLOW)
 ================================================================ */
 function requireToken() {
-  let token = sessionStorage.getItem("githubToken");
+  let token = window.top.sessionStorage.getItem("githubToken");
   if (token) return token;
 
   alert("Please give me another fun idea!");
@@ -596,5 +596,6 @@ async function saveProductFile() {
 
 </body>
 </html>
+
 
 
