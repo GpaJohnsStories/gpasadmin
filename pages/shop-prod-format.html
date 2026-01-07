@@ -16,7 +16,7 @@
     This <link> is NOT used to import HTML, but we keep it here
     as a reminder of where the menu lives.
   -->
-  <!-- admin menu lives at: ../gpas-admin/admin-menu.html -->
+  <!-- admin menu lives at: ../gpas-admin/pages/admin-menu.html -->
 
   <style>
     /* 
@@ -147,7 +147,7 @@
     This keeps your admin UI consistent across all tools.
   -->
   <div id="admin-header"></div>
-    <!-- Insert contents of ../gpas-admin/admin-menu.html here -->
+    <!-- Insert contents of ../gpas-admin/pages/admin-menu.html here -->
 
   <!-- PAGE TITLE -->
   <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/06-1</h2>
@@ -291,6 +291,7 @@
 
 <script>
   // Load the admin menu into the header
+	console.log("Loading admin menu…");
   fetch('admin-menu.html')
     .then(response => response.text())
     .then(html => {
@@ -635,6 +636,7 @@ async function saveProductFile() {
 
 </body>
 </html>
+
 
 
 
