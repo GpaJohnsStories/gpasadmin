@@ -2,6 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    const token = sessionStorage.getItem("githubToken");
+    if (!token) window.location.href = "../index.html";
+  </script>
+
   <meta charset="UTF-8">
   <title>GPAS Shop Product Formatter</title>
 
@@ -135,16 +140,14 @@
 </head>
 
 <body>
-
-  <!-- 
+<!-- 
     ADMIN MENU PLACEHOLDER 
     -----------------------
     You will manually include the admin menu HTML here.
     This keeps your admin UI consistent across all tools.
   -->
-  <div id="adminMenu">
+  <div id="admin-header"></div>
     <!-- Insert contents of ../gpas-admin/admin-menu.html here -->
-  </div>
 
   <!-- PAGE TITLE -->
   <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/06-1</h2>
@@ -285,6 +288,17 @@
   <!-- JAVASCRIPT SECTION                                            -->
   <!-- ============================================================= -->
   <script>
+
+<script>
+  // Load the admin menu into the header
+  fetch('admin-menu.html')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('admin-header').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Failed to load admin menu:', err);
+    });
 
 /* --------------------------------------------------------------
    DESCRIPTION CHARACTER COUNTER
@@ -621,6 +635,7 @@ async function saveProductFile() {
 
 </body>
 </html>
+
 
 
 
