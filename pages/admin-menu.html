@@ -154,6 +154,24 @@
 <script>
   const dropdown = document.getElementById('siteDropdown');
 
+// AUTO-DETECT SITE FROM FILENAME
+const currentPage = window.location.pathname.split('/').pop();
+const siteCode = currentPage.split('-')[0]; // kids, faith, shop, admin
+
+if (siteCode !== "admin") {
+  const siteName = siteCode.toUpperCase();
+
+  const repoMap = {
+    kids: "gpaskids",
+    faith: "gpasfaith",
+    shop: "gpasshop"
+  };
+
+  // Save auto-selected values
+  sessionStorage.setItem("selectedSite", siteName);
+  sessionStorage.setItem("selectedRepo", repoMap[siteCode]);
+}
+  
   // Load saved selection when page loads
   const savedSite = sessionStorage.getItem('selectedSite');
   const savedRepo = sessionStorage.getItem('selectedRepo');
