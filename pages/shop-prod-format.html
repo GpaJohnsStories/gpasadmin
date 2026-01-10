@@ -162,7 +162,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/10 - 14</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/15 - 14</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -313,6 +313,7 @@
   <!-- JAVASCRIPT SECTION                                            -->
   <!-- ============================================================= -->
 <script>
+<script>
 /* --------------------------------------------------------------
    DESCRIPTION CHARACTER COUNTER
 -------------------------------------------------------------- */
@@ -326,17 +327,11 @@ desc.addEventListener('input', () => {
 
 /* --------------------------------------------------------------
    PRODUCT CODE VALIDATION
-   - Always uppercase
-   - Only A-Z and 0-9 allowed
-   - Dash allowed ONLY after first 3 characters
 -------------------------------------------------------------- */
 function validateCode(input) {
   let v = input.value.toUpperCase();
-
-  // Allow only A–Z, 0–9, and dash
   v = v.replace(/[^A-Z0-9\-]/g, "");
 
-  // Split on dash, keep only first two parts
   const parts = v.split("-");
   let left = (parts[0] || "").replace(/[^A-Z0-9]/g, "").substring(0, 3);
   let right = (parts[1] || "").replace(/[^0-9]/g, "").substring(0, 3);
@@ -346,7 +341,6 @@ function validateCode(input) {
     return;
   }
 
-  // Rebuild as III or III- or III-SSS
   let result = left;
   if (right || v.includes("-")) result += "-";
   if (right) result += right;
@@ -354,288 +348,40 @@ function validateCode(input) {
   input.value = result;
 }
 
-	// ===============================================================
-// LOAD PRODUCT FROM GITHUB
-// This function loads an existing product HTML file from the
-// GpasShop GitHub repo using the product code typed by the user.
-// Example: FT1-001 loads /prod/FT1-001.html
-// ===============================================================
+
+/* ===============================================================
+   LOAD PRODUCT FROM GITHUB
+================================================================ */
 async function loadProduct() {
 
-// ---------------------------------------------------------------
-// 1. Get the product code from the input box
-// ---------------------------------------------------------------
-  const code = document.getElementById("prodCode").value.trim();
+  const code = document.getElementById("pcode").value.trim();  // FIXED
 
-  // If nothing was typed, stop and warn the user
   if (!code) {
     alert("Enter a product code like FT1-001");
     return;
   }
 
-  // ---------------------------------------------------------------
-  // 2. Build the RAW GitHub URL for the product file
-  // NOTE: This MUST use raw.githubusercontent.com
-  // ---------------------------------------------------------------
   const url = `https://raw.githubusercontent.com/GpaJohnsStories/GpasShop/main/prod/${code}.html`;
 
   try {
-    // ---------------------------------------------------------------
-    // 3. Fetch the product file from GitHub
-    // ---------------------------------------------------------------
     const response = await fetch(url);
 
-    // If GitHub returns 404 or any error, notify the user
     if (!response.ok) {
       alert(`Product ${code} not found in /prod/`);
       return;
     }
 
-    // ---------------------------------------------------------------
-    // 4. Convert the file into text (HTML)
-    // ---------------------------------------------------------------
     const html = await response.text();
-
-    // ---------------------------------------------------------------
-    // 5. Put the product HTML into the editor box
-    // This allows the user to edit the product
-    // ---------------------------------------------------------------
     document.getElementById("prodHtml").value = html;
 
-    // ---------------------------------------------------------------
-    // 6. Confirm success
-    // ---------------------------------------------------------------
-    alert(`Loaded product ${code}`);
-
   } catch (err) {
-    // ---------------------------------------------------------------
-    // 7. If something unexpected happens, show error
-    // ---------------------------------------------------------------
-    alert("Error loading product. Check console.");
-    console.error(err);
+    alert("Error loading product:\n" + err);
   }
-}
-
-
-/* --------------------------------------------------------------
-   PRICE VALIDATION
--------------------------------------------------------------- */
-function validatePrice(input) {
-  let v = input.value.replace(/[$,]/g, "");
-  v = v.replace(/[^0-9.]/g, "");
-
-  const parts = v.split(".");
-  if (parts.length > 2) {
-    v = parts[0] + "." + parts[1];
-  }
-
-  input.value = v;
-}
-
-
-/* --------------------------------------------------------------
-   LIVE PRODUCT CODE BUILDER — IP1-### FORMAT
--------------------------------------------------------------- */
-const interest = document.getElementById('interest');
-const ptype    = document.getElementById('ptype');
-const pcode    = document.getElementById('pcode');
-
-interest.addEventListener('change', buildCodePrefix);
-ptype.addEventListener('change', buildCodePrefix);
-
-function buildCodePrefix() {
-  const i = interest.value.toUpperCase();
-  const t = ptype.value.toUpperCase();
-
-  if (!i || !t) {
-    pcode.value = "";
-    return;
-  }
-
-  const prefix = i + t + "1";
-  pcode.value = prefix + "-";
-  validateCode(pcode);
-
-  fetchNextSuffix(prefix)
-    .then(nextSuffix => {
-      pcode.value = prefix + "-" + nextSuffix;
-      validateCode(pcode);
-    })
-    .catch(err => {
-      console.error("Error fetching next suffix:", err);
-      pcode.value = prefix + "-001";
-      validateCode(pcode);
-    });
-}
-
-
-/* --------------------------------------------------------------
-   FETCH NEXT AVAILABLE SUFFIX FROM GITHUB
--------------------------------------------------------------- */
-async function fetchNextSuffix(prefix) {
-  const apiUrl = "https://api.github.com/repos/GpaJohnsStories/GpasShop/contents/prod";
-
-  const response = await fetch(apiUrl);
-  if (!response.ok) throw new Error("GitHub API error: " + response.status);
-
-  const files = await response.json();
-  if (!Array.isArray(files)) throw new Error("Unexpected GitHub response format");
-
-  const regex = new RegExp("^" + prefix + "-?(\\d{3})\\.html$", "i");
-  let maxSuffix = 0;
-
-  for (const item of files) {
-    if (!item || !item.name) continue;
-
-    const match = item.name.match(regex);
-    if (match && match[1]) {
-      const num = parseInt(match[1], 10);
-      if (!isNaN(num) && num > maxSuffix) maxSuffix = num;
-    }
-  }
-
-  return String(maxSuffix + 1).padStart(3, "0");
-}
-
-
-/* --------------------------------------------------------------
-   ESCAPE HTML ENTITIES
--------------------------------------------------------------- */
-function escapeForHTML(str) {
-  if (!str) return "";
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-
-/* --------------------------------------------------------------
-   FORMAT BUTTON → BUILD PREVIEW
--------------------------------------------------------------- */
-const formatBtn = document.getElementById('formatBtn');
-const previewBox = document.getElementById('previewBox');
-
-formatBtn.addEventListener('click', () => {
-  if (validateBeforeFormat()) buildPreview();
-});
-
-
-/* --------------------------------------------------------------
-   VALIDATE REQUIRED FIELDS BEFORE FORMATTING
--------------------------------------------------------------- */
-function validateBeforeFormat() {
-  const code  = document.getElementById('pcode').value.trim();
-  const url   = document.getElementById('purl').value.trim();
-  const img   = document.getElementById('imgurl').value.trim();
-  const title = document.getElementById('title').value.trim();
-  const desc  = document.getElementById('desc').value.trim();
-  const cost  = document.getElementById('cost').value.trim();
-
-  if (!/^[A-Z0-9]{3}-\d{3}$/.test(code)) {
-    alert("Product Code must be III-SSS (example: FB1-001).");
-    return false;
-  }
-
-  if (url.length < 5) {
-    alert("Product Link URL is required.");
-    return false;
-  }
-
-  if (title.length < 1) {
-    alert("Product Title is required.");
-    return false;
-  }
-
-  if (desc.length < 1) {
-    alert("Description is required.");
-    return false;
-  }
-
-  if (cost && !/^\d+(\.\d{1,2})?$/.test(cost)) {
-    alert("Price must be a number like 12.99 (no $ sign).");
-    return false;
-  }
-
-  return true;
-}
-
-
-/* --------------------------------------------------------------
-   BUILD PREVIEW CARD
--------------------------------------------------------------- */
-function buildPreview() {
-  const code  = escapeForHTML(document.getElementById('pcode').value.trim());
-  const url   = escapeForHTML(document.getElementById('purl').value.trim());
-  const img   = escapeForHTML(document.getElementById('imgurl').value.trim());
-  const title = escapeForHTML(document.getElementById('title').value.trim());
-  const cost  = escapeForHTML(document.getElementById('cost').value.trim());
-  const desc  = escapeForHTML(document.getElementById('desc').value.trim());
-  const tags  = escapeForHTML(document.getElementById('tags').value.trim());
-
-  const cardHTML = `
-<div style="width:350px; border:5px solid #c8c8c8; border-radius:14px; box-shadow:4px 4px 8px rgba(0,0,0,0.25); padding:12px; background-color:#fdfdf4;">
-  <a href="${url}" target="_blank" style="text-decoration:none; color:black;">
-    <img src="${img}" alt="${title}" style="width:100%; height:auto; border:0;">
-    <h3 style="margin:10px 0 5px 0; font-size:22px; text-align:center;">${title}</h3>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 10px 0;">
-        <span style="font-size:21px; font-weight:bold;">${code}</span>
-        <span style="font-size:21px; font-weight:normal; text-align:right;">$${cost}</span>
-    </div>
-    <p style="margin:0 0 10px 0; font-size:18px; line-height:1.3;">${desc}</p>
-    <p style="margin:0; font-size:14px; color:#666;">Tags: ${tags}</p>
-  </a>
-</div>`;
-
-  previewBox.innerHTML = cardHTML;
-  window.finalProductHTML = cardHTML;
 }
 
 
 /* ===============================================================
-   BUTTON HANDLERS — CLEAN, SINGLE-TRIGGER SETUP
-   All buttons are wired once, in one place.
-================================================================ */
-
-/* SAVE */
-document.getElementById("saveBtn").addEventListener("click", () => {
-  saveProductFile();   // run your save logic
-});
-
-/* SAVE & CLEAR */
-document.getElementById("saveClearBtn").addEventListener("click", () => {
-  saveProductFile();   // save first
-  if (confirm("Clear all fields?")) {
-    clearFormFields();
-  }
-});
-
-/* LOAD */
-document.getElementById("loadBtn").addEventListener("click", () => {
-  loadProduct();       // your load logic
-});
-
-/* CLEAR FORM */
-document.getElementById("clearBtn").addEventListener("click", () => {
-  if (confirm("Clear all fields?")) {
-    clearFormFields();
-  }
-});
-
-/* DELETE */
-document.getElementById("deleteBtn").addEventListener("click", () => {
-  if (confirm("Delete this product file?")) {
-    deleteProductFile();   // your delete logic
-  }
-});
-
-
-
-
-/* ================================================================
-   GITHUB TOKEN HANDLING (ADMIN SECURITY FLOW)
+   GITHUB TOKEN HANDLING
 ================================================================ */
 function requireToken() {
   let token = window.top.sessionStorage.getItem("githubToken");
@@ -646,10 +392,12 @@ function requireToken() {
 }
 
 
-/* --------------------------------------------------------------
-   SAVE PRODUCT FILE DIRECTLY TO GITHUB
--------------------------------------------------------------- */
+/* ===============================================================
+   SAVE PRODUCT FILE TO GITHUB
+================================================================ */
 async function saveProductFile() {
+
+  console.log("saveProductFile fired");  // DEBUG LINE
 
   if (!window.finalProductHTML) {
     alert("Please click FORMAT before saving.");
@@ -721,24 +469,52 @@ async function saveProductFile() {
   }
 }
 
-	document.getElementById("saveClearBtn").addEventListener("click", () => {
+
+/* ===============================================================
+   CLEAR FORM FIELDS  —  PLACED HERE ON PURPOSE
+================================================================ */
+function clearFormFields() {
+
+  document.getElementById('pcode').value = '';
+  document.getElementById('title').value = '';
+  document.getElementById('cost').value = '';
+  document.getElementById('desc').value = '';
+  document.getElementById('descCounter').textContent = '0 / 600';
+
+  document.getElementById('interest').value = '';
+  document.getElementById('ptype').value = '';
+
+  if (document.getElementById('prodHtml')) {
+    document.getElementById('prodHtml').value = '';
+  }
+
+  window.finalProductHTML = '';
+}
+
+
+/* ===============================================================
+   BUTTON HANDLERS — CLEAN, SINGLE-TRIGGER SETUP
+================================================================ */
+document.getElementById("saveBtn").addEventListener("click", () => {
   saveProductFile();
-  alert("Product saved!");
+});
+
+document.getElementById("loadBtn").addEventListener("click", () => {
+  loadProduct();
+});
+
+document.getElementById("saveClearBtn").addEventListener("click", () => {
+  saveProductFile();
   if (confirm("Clear all fields?")) clearFormFields();
 });
 
-	  document.getElementById("deleteBtn").addEventListener("click", () => {
-  if (confirm("Delete this product file?")) {
-    deleteProductFile(); // your GitHub delete logic
-    alert("Product deleted.");
-  }
+document.getElementById("clearBtn").addEventListener("click", () => {
+  if (confirm("Clear all fields?")) clearFormFields();
 });
 
+document.getElementById("deleteBtn").addEventListener("click", () => {
+  if (confirm("Delete this product file?")) deleteProductFile();
+});
 </script>
-
 </body>
 </html>
-
-
-
-
