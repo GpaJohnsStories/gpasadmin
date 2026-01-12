@@ -203,7 +203,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/11 - C3</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/11 - C4</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -333,7 +333,7 @@
         <input
           id="imgurl"
           type="text"
-          placeholder="Save Image As URL"
+          placeholder="Product Image URL"
           style="width:95%; font-size:21px; font-weight:bold; margin-bottom:6px;">
 
         <!-- PRODUCT TITLE -->
@@ -365,13 +365,13 @@
 <button id="formatBtn"
         style="background-color:#228B22;
                color:white;
-               width:150px;
+               width:300px;
                font-family:Lexend;
                font-size:24px;
                font-weight:bold;
                padding:6px 0;
                text-align:center;">
-                  Format LISTING
+                  Format Listing
                </button><br>
 
         
@@ -621,8 +621,7 @@ if (cost && !isNaN(cost) && Number(cost) > 0) {
             ? "<p style='font-family:Lexend; font-size:21px; font-weight:normal; line-height:34px; margin:10px 0;'>" 
             + escapeHtml(desc) + 
               "</p>"
-            : "")
-
+            : "") +
           (purl
             ? "<div class='product-link'><a href='" + encodeURI(purl) + "'>View details</a></div>"
             : "") +
