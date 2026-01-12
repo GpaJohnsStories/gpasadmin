@@ -91,20 +91,24 @@
       margin-bottom: 4px;
     }
 
-    /* 
-      PREVIEW BOX 
-      -----------
-      Only area allowed to scroll.
-    */
-    #previewBox {
-      width: 100%;
-      height: 300px;
-      overflow: auto;
-      border: 4px solid #ccc;
-      padding: 10px;
-      background-color: #fdfdf4;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
+/* PRODUCT CARD PREVIEW WIDTH CONTROL */
+#previewBox {
+  width: 300px;        /* exact public card width */
+  max-width: 300px;
+  height: 420px;       /* exact public card height */
+  overflow: auto;
+  border: 4px solid #ccc;
+  padding: 10px;
+  background-color: #fdfdf4;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Ensure the card inside doesn't stretch wider */
+#previewBox .product-card {
+  width: 300px;
+  max-width: 300px;
+  margin: 0 auto;
+}
 
     /* 
       DESCRIPTION COUNTER 
@@ -137,6 +141,39 @@
   margin: 0 auto;      /* center it inside the preview box */
 }
 
+/* Align title and author in center */
+.product-title,
+.product-author {
+  text-align: center;
+}
+/* Align product code left, price on right */
+.product-code-price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 21px;
+  margin: 4px 0;
+}
+
+.product-code {
+  font-weight: bold;
+}
+.product-price {
+  font-weight: bold;
+  text-align: right;
+}
+/* Make product description regular and NOT bold */
+.product-description {
+  font-weight: normal;
+}
+
+/* Make product tags small font and not bold */
+.product-tags {
+  font-size: 12pt;
+  font-weight: normal;
+  color: #444;
+  margin-top: 6px;
+}
+
   </style>
 </head>
 
@@ -163,7 +200,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/11 - A2</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/11 - B1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -235,6 +272,15 @@
           </div>
 
         </div>
+
+<!-- Site Code, position 3 of Product Code -->        
+  <label for="site">Site Family:</label>
+    <select id="site">
+      <option value="4">GpasKids</option>
+      <option value="1">GpasFaith</option>
+      <option value="9">GpasShop</option>
+    </select>
+
 
         <!-- TAGS LIVE IN COLUMN 1 (AS YOU REQUESTED) -->
         <label for="tags">Search Tags (comma separated ", "):</label><br>
@@ -348,59 +394,66 @@
     });
   })();
 
+/* ===============================================================
+   PRODUCT CODE BUILDER
+   Pattern: [INTEREST][TYPE][SITE]-[NNN].html
+   - INTEREST = F, U, A
+   - TYPE     = T, B, O, E
+   - SITE     = 1 (Faith), 4 (Kids), 9 (Shop)
+   - Auto-increments suffix by scanning /prod on GitHub
+================================================================= */
+async function buildProductCode() {
+  const interest = document.getElementById("interest").value.toUpperCase();
+  const ptype    = document.getElementById("ptype").value.toUpperCase();
+  const site     = document.getElementById("site").value;  // NEW
 
-  /* ===============================================================
-     PRODUCT CODE BUILDER (INTEREST + TYPE + AUTO-INCREMENT SUFFIX)
-     - Uses GitHub API to scan /prod for existing codes.
-     - Pattern: [INTEREST][TYPE]1-[NNN].html  (e.g., FT1-003.html)
-  ================================================================= */
-  async function buildProductCode() {
-    const interest = document.getElementById("interest").value.toUpperCase();
-    const ptype    = document.getElementById("ptype").value.toUpperCase();
+  // Need all three dropdowns selected before we attempt a code
+  if (!interest || !ptype || !site) return;
 
-    // Need both dropdowns selected before we attempt a code
-    if (!interest || !ptype) return;
+  // Build prefix with new Site Code in position 3
+  const prefix = interest + ptype + site;
 
-    // Base prefix for this category
-    const prefix = interest + ptype + "1";
+  // GitHub API: list files in prod/ directory
+  const apiUrl = "https://api.github.com/repos/GpaJohnsStories/GpasShop/contents/prod";
 
-    // GitHub API: list files in prod/ directory
-    const apiUrl = "https://api.github.com/repos/GpaJohnsStories/GpasShop/contents/prod";
+  let nextSuffix = "001";
 
-    let nextSuffix = "001";
+  try {
+    const response = await fetch(apiUrl);
+    if (response.ok) {
+      const files = await response.json();
 
-    try {
-      const response = await fetch(apiUrl);
-      if (response.ok) {
-        const files = await response.json();
+      // Match: PREFIX-NNN.html  (case insensitive)
+      const regex = new RegExp("^" + prefix + "-(\\d{3})\\.html$", "i");
+      let max = 0;
 
-        // Match: PREFIX-NNN.html  (case insensitive)
-        const regex = new RegExp("^" + prefix + "-(\\d{3})\\.html$", "i");
-        let max = 0;
+      for (const item of files) {
+        if (!item || !item.name) continue;
 
-        for (const item of files) {
-          if (!item || !item.name) continue;
-
-          const match = item.name.match(regex);
-          if (match && match[1]) {
-            const num = parseInt(match[1], 10);
-            if (num > max) max = num;
-          }
+        const match = item.name.match(regex);
+        if (match && match[1]) {
+          const num = parseInt(match[1], 10);
+          if (num > max) max = num;
         }
-
-        nextSuffix = String(max + 1).padStart(3, "0");
       }
-    } catch (err) {
-      console.error("Error fetching suffix from GitHub:", err);
-    }
 
-    const finalCode = prefix + "-" + nextSuffix;
-    document.getElementById("pcode").value = finalCode;
+      nextSuffix = String(max + 1).padStart(3, "0");
+    }
+  } catch (err) {
+    console.error("Error fetching suffix from GitHub:", err);
   }
 
-  // Rebuild code whenever interest or type changes
+  const finalCode = prefix + "-" + nextSuffix;
+  document.getElementById("pcode").value = finalCode;
+}
+
+
+
+  // Rebuild code whenever interest or type or site changes
   document.getElementById("interest").addEventListener("change", buildProductCode);
   document.getElementById("ptype").addEventListener("change", buildProductCode);
+  document.getElementById("site").addEventListener("change", buildProductCode);
+
 
 
   /* ===============================================================
@@ -890,6 +943,8 @@
   document.getElementById("formatBtn").addEventListener("click", () => {
     formatListing();
   });
+
+
   </script>
 
 </body>
