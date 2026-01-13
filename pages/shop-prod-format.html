@@ -80,35 +80,6 @@
     }
 
 /* ADMIN ACTION BUTTONS — 3D PILL STYLE */
-.admin-btn {
-  width: 300px;
-  padding: 12px 0;
-  font-family: Lexend;
-  font-size: 22px;
-  font-weight: bold;
-  color: white;
-
-  border: none;
-  border-radius: 5px;
-
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.25),
-    rgba(0,0,0,0.15)
-  );
-
-  box-shadow:
-    0 4px 0 rgba(0,0,0,0.35),
-    0 6px 10px rgba(0,0,0,0.25);
-
-  cursor: pointer;
-  margin-bottom: 14px;
-
-  transition:
-    transform 0.08s ease,
-    box-shadow 0.08s ease;
-}
-
 .admin-btn:active {
   transform: translateY(3px);
   box-shadow:
@@ -199,7 +170,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/13 - C1</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/13 - D1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -217,20 +188,63 @@
       <td>
 
         <!-- CONTROL BUTTONS -->
-        <div class="inline-buttons">
-          <button id="saveBtn" style="background-color:#228B22; color:white; width:200px;">
-            SAVE LISTING
-          </button>
-        </div>
+<div style="text-align:center; margin-bottom:20px;">
 
-        <div class="inline-buttons">
-          <button id="saveClearBtn" style="background-color:#cc0000; color:white; width:200px;">
-            <strong>SAVE &amp; CLEAR</strong>
-          </button>
-          <button id="clearBtn" style="background-color:#cc0000; color:white; width:200px;">
-            <strong>CLEAR FORM</strong>
-          </button>
-        </div>
+  <button id="saveBtn" class="admin-btn"
+    style="
+      width:300px;
+      padding:12px 0;
+      font-family:Lexend;
+      font-size:22px;
+      font-weight:bold;
+      color:white;
+      background-color:#228B22;
+      border:none;
+      border-radius:5px;
+      box-shadow:0 4px 0 rgba(0,0,0,0.35), 0 6px 10px rgba(0,0,0,0.25);
+      cursor:pointer;
+      margin-bottom:14px;
+    ">
+    SAVE LISTING
+  </button>
+  <br>
+
+  <button id="saveClearBtn" class="admin-btn"
+    style="
+      width:300px;
+      padding:12px 0;
+      font-family:Lexend;
+      font-size:22px;
+      font-weight:bold;
+      color:white;
+      background-color:#66FF00;
+      border:none;
+      border-radius:5px;
+      box-shadow:0 4px 0 rgba(0,0,0,0.35), 0 6px 10px rgba(0,0,0,0.25);
+      cursor:pointer;
+      margin-bottom:14px;
+    ">
+    SAVE &amp; CLEAR
+  </button>
+<br>
+  <button id="clearBtn" class="admin-btn"
+    style="
+      width:300px;
+      padding:12px 0;
+      font-family:Lexend;
+      font-size:22px;
+      font-weight:bold;
+      color:white;
+      background-color:#CC0000;
+      border:none;
+      border-radius:5px;
+      box-shadow:0 4px 0 rgba(0,0,0,0.35), 0 6px 10px rgba(0,0,0,0.25);
+      cursor:pointer;
+      margin-bottom:14px;
+    ">
+    CLEAR FORM
+  </button>
+</div>
 
         <!-- BUILD PRODUCT CODE SECTION -->
 
@@ -263,14 +277,14 @@
         </div>
 
 <!-- Site Code, position 3 of Product Code -->        
-  <label for="site">Site Family:</label>
-    <select id="site" style="width:150px;">
-      <option value="4">GpasKids</option>
-      <option value="1">GpasFaith</option>
-      <option value="9">GpasShop</option>
-    </select>
+<label for="site">Site Family:</label>
+<select id="site" style="width:150px;">
+  <option value="">— Select Site —</option>
+  <option value="4">GpasKids</option>
+  <option value="1">GpasFaith</option>
+  <option value="9">GpasShop</option>
+</select>
 <br>
-
         <!-- TAGS LIVE IN COLUMN 1 (AS YOU REQUESTED) -->
         <label for="tags">Search Tags (comma separated ", "):</label><br>
         <textarea id="tags" rows="4"></textarea>
@@ -348,17 +362,24 @@
       <td>
 
         <!-- FORMAT BUTTON -->
-<button id="formatBtn"
-        style="background-color:#228B22;
-               color:white;
-               width:330px;
-               font-family:Lexend;
-               font-size:24px;
-               font-weight:bold;
-               padding:6px 0;
-               text-align:center;">
-                  Preview Listing
-               </button><br>
+<button id="formatBtn" class="admin-btn"
+  style="
+    width:330px;
+    padding:12px 0;
+    font-family:Lexend;
+    font-size:22px;
+    font-weight:bold;
+    color:white;
+    background-color:#444;
+    border:none;
+    border-radius:5px;
+    box-shadow:0 4px 0 rgba(0,0,0,0.35), 0 6px 10px rgba(0,0,0,0.25);
+    cursor:pointer;
+    margin-bottom:14px;
+  ">
+  PREVIEW LISTING
+</button>
+
 
         
         <!-- PREVIEW BOX (SCROLLABLE) -->
