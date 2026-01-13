@@ -90,7 +90,7 @@
 /* PRODUCT CARD PREVIEW WIDTH CONTROL */
 #previewBox {
   width: 330px;
-  height: 400px;
+  height: 380px;
   padding: 10px;
   border: 4px solid #ccc;
   box-sizing: border-box;   /* 🔒 THIS IS THE KEY */
@@ -170,7 +170,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/13 - D2</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/13 - D3</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -249,7 +249,7 @@
         <!-- BUILD PRODUCT CODE SECTION -->
 
         <!-- 2 DROPDOWN BOXES ON SAME LINE -->
-        <div style="display:flex; gap:20px;">
+        <div style="display:flex; gap:10px;">
 
           <!-- INTEREST -->
           <div>
@@ -274,17 +274,18 @@
             </select>
           </div>
 
+<!-- Site Code, position 3 of Product Code -->   
+        <div>
+            <label for="site">Site Family:</label>
+            <select id="site" style="width:150px;">
+              <option value="" selected></option>
+              <option value="4">GpasKids</option>
+              <option value="1">GpasFaith</option>
+              <option value="9">GpasShop</option>
+            </select>
+          </div>
         </div>
 
-<!-- Site Code, position 3 of Product Code -->        
-<label for="site">Site Family:</label>
-<select id="site" style="width:150px;">
-  <option value="">— Select Site —</option>
-  <option value="4">GpasKids</option>
-  <option value="1">GpasFaith</option>
-  <option value="9">GpasShop</option>
-</select>
-<br>
         <!-- TAGS LIVE IN COLUMN 1 (AS YOU REQUESTED) -->
         <label for="tags">Search Tags (comma separated ", "):</label><br>
         <textarea id="tags" rows="4"></textarea>
