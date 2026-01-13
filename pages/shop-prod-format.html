@@ -97,7 +97,7 @@
 /* PRODUCT CARD PREVIEW WIDTH CONTROL */
 #previewBox {
   width: 300px;
-  height: 420px;
+  height: 500px;
   padding: 10px;
   border: 4px solid #ccc;
   box-sizing: border-box;   /* 🔒 THIS IS THE KEY */
@@ -118,22 +118,10 @@
       margin-bottom: 6px;
     }
 
-/* PRODUCT CARD PREVIEW WIDTH CONTROL */
-#previewBox {
-  width: 360px;        /* exact public card width */
-  max-width: 360px;
-  height: 300px;
-  overflow: auto;
-  border: 4px solid #ccc;
-  padding: 10px;
-  background-color: #fdfdf4;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
 /* Ensure the card inside doesn't stretch wider */
 #previewBox .product-card {
-  width: 360px;
-  max-width: 360px;
+  width: 300px;
+  max-width: 300px;
   margin: 0 auto;      /* center it inside the preview box */
 }
 
@@ -682,12 +670,12 @@ const cardHTML =
     // 7) Update preview
     const preview = document.getElementById("previewBox");
     if (preview) {
-      preview.innerHTML = cardHTML;
+      preview.innerHTML =
+  "<div style='font-weight:400;'>" +
+    cardHTML +
+  "</div>";
     }
-
-    alert("Listing formatted. Please review the preview box.");
   }
-
 
   /* ===============================================================
      ESCAPE HTML HELPER
@@ -1030,7 +1018,6 @@ if (rawPrice && !isNaN(rawPrice) && Number(rawPrice) > 0) {
   document.getElementById("formatBtn").addEventListener("click", () => {
     formatListing();
   });
-
 
   </script>
 
