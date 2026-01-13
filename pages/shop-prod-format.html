@@ -96,21 +96,14 @@
 
 /* PRODUCT CARD PREVIEW WIDTH CONTROL */
 #previewBox {
-  width: 310px;        /* Fits 300px wide public card */
-  max-width: 300px;
-  height: 420px;       /* exact public card height */
-  overflow: auto;
-  border: 4px solid #ccc;
+  width: 310px;
+  height: 420px;
   padding: 10px;
+  border: 4px solid #ccc;
+  box-sizing: border-box;   /* 🔒 THIS IS THE KEY */
+  overflow: auto;
   background-color: #fdfdf4;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-/* Ensure the card inside doesn't stretch wider */
-#previewBox .product-card {
-  width: 300px;
-  max-width: 300px;
-  margin: 0 auto;
 }
 
     /* 
@@ -196,7 +189,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/12 - C1</h2>
+  <h2 style="text-align:center;">GPAS Shop Product Formatter -- 01/12 - D1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -642,18 +635,20 @@ const cardHTML =
           escapeHtml(author) +
         "</div>"
       : "") +
-    "<div style='font-family:Lexend; font-size:21px; margin:10px 0; display:flex; justify-content:space-between;'>" +
-      "<span><b>" + escapeHtml(code) + "</b></span>" +
-     (cost && !isNaN(cost) && Number(cost) > 0
-  ? "<span><b>$ " + Number(cost).toFixed(2) + "</b></span>"
-  : "<span></span>") 
-    "</div>" +
-    (desc
-      ? "<p style='font-family:Lexend; font-size:21px; font-weight:normal; line-height:26px; margin:10px 0;'>" +
-          escapeHtml(desc) +
-        "</p>"
-      : "") +
-
+"<div style='font-family:Lexend; font-size:21px; margin:10px 0;" +
+  (cost && !isNaN(cost) && Number(cost) > 0
+    ? " display:flex; justify-content:space-between;'>"
+    : " text-align:center;'>") +
+  "<span><b>" + escapeHtml(code) + "</b></span>" +
+  (cost && !isNaN(cost) && Number(cost) > 0
+    ? "<span><b>$ " + Number(cost).toFixed(2) + "</b></span>"
+    : "") +
+"</div>" +
+(desc
+  ? "<p style='font-family:Lexend; font-size:21px; font-weight:normal; line-height:26px; margin:10px 0;'>" +
+      escapeHtml(desc) +
+    "</p>"
+  : "") +
 (purl
   ? "<div style='margin:14px 0; text-align:center;'>" +
       "<a href='" + encodeURI(purl) + "' " +
