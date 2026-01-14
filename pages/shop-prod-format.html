@@ -254,8 +254,9 @@
 <!-- INTEREST -->
 <div>
   <label for="interest">Interest:</label><br>
-  <select id="interest" style="width:120px; font-weight:bold;">
-    <option value="" selected></option>
+  <select id="interest" style="width:100px; font-weight:bold;"
+        onchange="applySelectedOptionStyle('interest')">
+  <option value="" selected></option>
     <option value="F"
       style="font-weight:bold; background-color:#5A2D82; color:#FFD700;">
       FAITH
@@ -270,8 +271,8 @@
 <!-- PRODUCT TYPE -->
 <div>
   <label for="ptype">Product Type:</label><br>
-  <select id="ptype" style="width:235px; font-weight:bold;">
-
+  <select id="ptype" style="width:150px; font-weight:bold;"
+        onchange="applySelectedOptionStyle('ptype')">
     <option value="" selected></option>
     <!-- T‑Shirts: rust orange background, bright green text -->
     <option value="T"
@@ -295,8 +296,9 @@
 <!-- Site Code, position 3 of Product Code -->
 <div>
   <label for="site">Site Family:</label>
-  <select id="site" style="width:150px; font-weight:bold;">
-    <option value="" selected></option>
+  <select id="site" style="width:140px; font-weight:bold;"
+        onchange="applySelectedOptionStyle('site')">
+  <option value="" selected></option>
     <!-- KIDS: orange background, white text -->
     <option value="4"
       style="font-weight:bold; background:#f97316; color:#ffffff;">
@@ -314,6 +316,17 @@
     </option>
   </select>
 </div>
+
+<script>
+function applySelectedOptionStyle(selectId) {
+  const sel = document.getElementById(selectId);
+  const opt = sel.options[sel.selectedIndex];
+
+  // Copy the option's background and text color onto the select box
+  sel.style.backgroundColor = opt.style.backgroundColor || "#ffffff";
+  sel.style.color = opt.style.color || "#000000";
+}
+</script>
 
         <!-- TAGS LIVE IN COLUMN 1 (AS YOU REQUESTED) -->
         <label for="tags">Search Tags (comma separated ", "):</label><br>
