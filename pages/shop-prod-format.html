@@ -263,7 +263,7 @@
     </option>
     <option value="U"
       style="font-weight:bold; background-color:#B7410E; color:#00FF66;">
-      (U) FUN
+      (H) HAPPY
     </option>
   </select>
 </div>
@@ -300,19 +300,19 @@
         onchange="applySelectedOptionStyle('site')">
   <option value="" selected></option>
     <!-- KIDS: orange background, white text -->
-    <option value="4"
+    <option value="K"
       style="font-weight:bold; background:#f97316; color:#ffffff;">
-      (4) GpasKids
+      (K) GpasKids
     </option>
     <!-- FAITH: green background, white text -->
-    <option value="1"
+    <option value="F"
       style="font-weight:bold; background:#228b22; color:#ffffff;">
-      (1) GpasFaith
+      (F) GpasFaith
     </option>
     <!-- SHOP: medium brown background, white text -->
-    <option value="9"
+    <option value="S"
       style="font-weight:bold; background:#a0522d; color:#ffffff;">
-      (9) GpasShop
+      (S) GpasShop
     </option>
   </select>
 </div>
@@ -476,9 +476,9 @@ function applySelectedOptionStyle(selectId) {
 /* ===============================================================
    PRODUCT CODE BUILDER
    Pattern: [INTEREST][TYPE][SITE]-[NNN].html
-   - INTEREST = F, U, A
-   - TYPE     = T, B, O, E
-   - SITE     = 1 (Faith), 4 (Kids), 9 (Shop)
+   - INTEREST = F or H
+   - TYPE     = T, B, or O
+   - SITE     = F (Faith), K (Kids), S (Shop)
    - Auto-increments suffix by scanning /prod on GitHub
 ================================================================= */
 async function buildProductCode() {
