@@ -328,7 +328,10 @@ function applySelectedOptionStyle(selectId) {
 </script>
 
         <!-- TAGS LIVE IN COLUMN 1 (AS YOU REQUESTED) -->
-        <label for="tags">Search Tags ", ":</label><br>
+       <label for="tags">
+  Tags (max 10, 1–2 words each, comma‑separated):
+</label><br>
+
         <textarea id="tags" rows="5"></textarea>
 
       </td>
@@ -608,20 +611,41 @@ async function buildProductCode() {
     return "$ " + n.toFixed(2);
   }
 
+/* ===============================================================
+   TAG PARSER + NORMALIZER
+   - Input: textarea text, comma-separated
+   - Output:
+       display: "tag1, tag2, tag3"
+       data:    "tag1,tag2,tag3"
+   - Rules:
+       * trim whitespace
+       * collapse internal spaces
+       * lowercase
+       * remove empties
+       * max 10 tags
+================================================================= */
+function parseTags(rawTags) {
+  if (!rawTags) return { list: [], display: "", data: "" };
 
-  /* ===============================================================
-     TAG NORMALIZER
-     - Takes textarea value and converts to "tag1, tag2, tag3".
-     - Strips extra whitespace and empty entries.
-  ================================================================= */
-  function normalizeTags(rawTags) {
-    if (!rawTags) return "";
+  const list = rawTags
+    .split(",")
+    .map(t => t.trim().toLowerCase())
+    .map(t => t.replace(/\s+/g, " "))
+    .filter(t => t.length > 0);
 
-    // Split on commas, trim each piece
-    const parts = rawTags.split(",").map(t => t.trim()).filter(t => t.length > 0);
-
-    return parts.join(", ");
+  if (list.length > 10) {
+    alert("ERROR: Max 10 tags. You entered " + list.length + ".");
+    return null; // hard stop
   }
+
+  return {
+    list,
+    display: list.join(", "),
+    data: list.join(",")
+  };
+}
+
+
 
 // Post Store Name    
 function detectStoreName(url) {
