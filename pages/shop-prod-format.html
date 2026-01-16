@@ -170,7 +170,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/16 - B2</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/16 - B3</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -654,7 +654,7 @@ function detectStoreName(url) {
 
   const u = url.toLowerCase();
 
-  if (u.includes("amazon")) return "Amazon";
+  if (u.includes("amazon") || u.includes("amzn.to")) return "Amazon";
   if (u.includes("zazzle")) return "Zazzle";
 
   // Future‑proofing: if you ever add a bookstore
