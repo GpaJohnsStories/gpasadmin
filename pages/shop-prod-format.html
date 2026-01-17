@@ -170,7 +170,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - A3</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - A5</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -817,217 +817,154 @@ function detectStoreName(url) {
   function formatListing() {
 alert("formatListing started");
 
-  // ---------------------------------------------------------------
-  // REQUIRED FIELD GUARDS (HARD STOP)
-  // ---------------------------------------------------------------
-  const title  = document.getElementById("title").value.trim();
-  const imgurl = document.getElementById("imgurl").value.trim();
-  const purl   = document.getElementById("purl").value.trim();
+function formatListing() {
 
-  // if (!title) {
-//    alert("ERROR: Product title is required. Fix it and try again.");
-//    return;
-//  }
-
-// ---------------------------------------------------------------
-// CARD DATE ATTRIBUTE
-// - ISO-8601 timestamp
-// - Uses local PC time
-// - Sortable as a string (newest / oldest)
-// ---------------------------------------------------------------
-const cardDate = new Date().toISOString();
-
-//  if (!imgurl) {
-//    alert("ERROR: Product image URL is required. Fix it and try again.");
-//    return;
-//  }
-
-//  if (!purl) {
-//    alert("ERROR: Product URL is required. Fix it and try again.");
-//    return;
-//  }
-  const storeName = detectStoreName(purl);
-
-// ---------------------------------------------------------------
-// HARD GUARDRAILS — FORMAT MUST FAIL IF ANY RULE IS BROKEN
-// ---------------------------------------------------------------
-
-// Product code
-if (!pcode) {
-  alert("ERROR: Product code is required. Fix it and try again.");
-  return;
-}
-
-// Product URL
-if (!purl) {
-  alert("ERROR: Product URL is required. Fix it and try again.");
-  return;
-}
-
-// Photo URL
-if (!imgurl) {
-  alert("ERROR: Photo URL is required. Fix it and try again.");
-  return;
-}
-
-// Title
-if (!title) {
-  alert("ERROR: Product title is required. Fix it and try again.");
-  return;
-}
-
-// Description — minimum 10 words
-const descWordCount = description
-  .replace(/<[^>]*>/g, "")   // strip allowed HTML
-  .trim()
-  .split(/\s+/)
-  .filter(Boolean)
-  .length;
-
-alert("Description word count = " + descWordCount);
-
-if (descWordCount < 10) {
-  alert("ERROR: Description must be at least 10 words. Fix it and try again.");
-  return;
-}
-
-// Tags — must be 1–10
-if (!tagsData) {
-  alert("ERROR: At least one tag is required.");
-  return;
-}
-
-const tagCount = tagsData.split(",").filter(Boolean).length;
-
-if (tagCount > 10) {
-  alert("ERROR: No more than 10 tags allowed.");
-  return;
-}
-
-  
-  // ---------------------------------------------------------------
-  // 1) Grab remaining OPTIONAL field values
-  // ---------------------------------------------------------------
+  /* -------------------------------------------------------------
+     1) CAPTURE RAW INPUT VALUES (single source of truth)
+  ------------------------------------------------------------- */
   const code   = (document.getElementById("pcode").value || "").trim();
+  const title  = (document.getElementById("title").value || "").trim();
   const author = (document.getElementById("author").value || "").trim();
   const cost   = (document.getElementById("cost").value || "").trim();
   const desc   = (document.getElementById("desc").value || "").trim();
-  const tagsRaw   = (document.getElementById("tags").value || "").trim();
+  const tagsRaw = (document.getElementById("tags").value || "").trim();
+  const imgurl = (document.getElementById("imgurl").value || "").trim();
+  const purl   = (document.getElementById("purl").value || "").trim();
 
-  // title, imgurl, purl are already available and valid
-  // ... continue building HTML ...
-    
-// 2) Build cost HTML (hide if blank or zero)
-let costHTML = "";
-if (cost && !isNaN(cost) && Number(cost) > 0) {
-  const formatted = Number(cost).toFixed(2);
-  costHTML = `<div class="price">$ ${formatted}</div>`;
-}
-
-    
-    // 3) Basic safety checks
-    if (!code) {
-      alert("Product Code is required before formatting.");
-      return;
-    }
-    if (!title) {
-      alert("Product Title is required.");
-      return;
-    }
-
- // 4) Parse + normalize tags (max 10 enforced)
-const tagsParsed = parseTags(tagsRaw);
-if (tagsParsed === null) return; // hard stop if too many tags
-
-const tagsDisplay = tagsParsed.display; // preview only
-const tagsData    = tagsParsed.data;    // saved in data-tags
-
-
-    // 5) Build card HTML (this is what the shop page will use)
-    //    Adjust structure and classes to match your live product wall.
-    // other border colors: #999 Medium Gray, #aaa Light-Medium Gray,
-    // #bbb between #aaa and #ccc, #888 dark-medium gray
-
-    /* ===============================================================
-   CREATE BUTTON FOR ONLINE STORE
-   - Displays a pill‑shaped 3D button linking to the product page
-   - Automatically includes detected store name (Amazon, Zazzle, etc.)
-================================================================= */
-alert("FORMAT SUCCESS — BUILDING PREVIEW");
-
-const cardHTML =
-"<article class='product-card' " +
-  "data-code='" + escapeHtml(pcode.toUpperCase()) + "' " +
-  "data-title='" + escapeHtml(title.toLowerCase()) + "' " +
-  "data-author='" + escapeHtml(author.toLowerCase()) + "' " +
-  "data-price='" + (cost && !isNaN(cost) ? Number(cost).toFixed(2) : "") + "' " +
-  "data-tags='" + escapeHtml(tagsData) + "' " +
-  "data-date='" + escapeHtml(cardDate) + "' " +
-  "style='width:300px; border:4px solid #999; padding:10px; box-sizing:border-box;'>"
-
-    "<div style='text-align:center;'>" +
-      (imgurl
-        ? "<a href='" + encodeURI(purl || "#") + "' target='_blank' rel='noopener noreferrer'>" +
-            "<img src='" + encodeURI(imgurl) + "' alt='" + escapeHtml(title) + "' style='width:100%; height:auto; border:0;'>" +
-          "</a>"
-        : "") +
-    "</div>" +
-    "<h3 style='font-family:Lexend; font-size:24px; font-weight:bold; text-align:center; margin:10px 0 5px 0;'>" +
-      escapeHtml(title) +
-    "</h3>" +
-    (author
-      ? "<div style='font-family:Lexend; font-size:21px; font-weight:bold; text-align:center; margin-bottom:8px;'>" +
-          escapeHtml(author) +
-        "</div>"
-      : "") +
-"<div style='font-family:Lexend; font-size:21px; margin:10px 0;" +
-  (cost && !isNaN(cost) && Number(cost) > 0
-    ? " display:flex; justify-content:space-between;'>"
-    : " text-align:center;'>") +
-  "<span>" + escapeHtml(code) + "</span>" +
-  (cost && !isNaN(cost) && Number(cost) > 0
-    ? "<span>$ " + Number(cost).toFixed(2) + "</span>"
-    : "") +
-"</div>" +
-(desc
-  ? "<p style='font-family:Lexend; font-size:21px; font-weight:400; line-height:26px; margin:10px 0;'>" +
-      desc +
-    "</p>"
-  : "") +
-(purl
-  ? "<div style='margin:14px 0; text-align:center;'>" +
-      "<a href='" + encodeURI(purl) + "' target='_blank' rel='noopener noreferrer' " +
-         "style='display:inline-block; " +
-                "padding:10px 21px; " +
-                "font-family:Lexend; " +
-                "font-size:18px; " +
-                "font-weight:bold; " +
-                "color:#fff; " +
-                "background:#2e7d32; " +
-                "border:4px solid #1b5e20; " +
-                "border-radius:999px; " +
-                "box-shadow:0 3px 0 #666; " +
-                "text-decoration:none;'>" +
-        "View Details" +
-        (storeName ? " at " + storeName + ".com" : "") +
-      "</a>" +
-    "</div>"
-  : "") +
-
-  "</article>";
-
-    // 6) Store in global for saving
-    window.finalProductHTML = cardHTML;
-
-    // 7) Update preview
-    const preview = document.getElementById("previewBox");
-    if (preview) {
-      preview.innerHTML =
-  "<div style='font-weight:400;'>" +
-    cardHTML +
-  "</div>";
-    }
+  /* -------------------------------------------------------------
+     2) HARD GUARDRAILS — FORMAT MUST FAIL IF ANY RULE IS BROKEN
+  ------------------------------------------------------------- */
+  if (!code) {
+    alert("ERROR: Product Code is required.");
+    return;
   }
+
+  if (!title) {
+    alert("ERROR: Product Title is required.");
+    return;
+  }
+
+  if (!imgurl) {
+    alert("ERROR: Product Image URL is required.");
+    return;
+  }
+
+  if (!purl) {
+    alert("ERROR: Product Link URL is required.");
+    return;
+  }
+
+  // Description — minimum 10 words (HTML stripped)
+  const descWordCount = desc
+    .replace(/<[^>]*>/g, "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .length;
+
+  if (descWordCount < 10) {
+    alert("ERROR: Description must be at least 10 words.");
+    return;
+  }
+
+  // Tags — metadata only, 1–10 required
+  const tagsParsed = parseTags(tagsRaw);
+  if (!tagsParsed || !tagsParsed.data) {
+    alert("ERROR: At least one tag is required.");
+    return;
+  }
+
+  const tagCount = tagsParsed.data.split(",").filter(Boolean).length;
+  if (tagCount > 10) {
+    alert("ERROR: No more than 10 tags allowed.");
+    return;
+  }
+
+  /* -------------------------------------------------------------
+     3) DERIVED VALUES
+  ------------------------------------------------------------- */
+  const storeName = detectStoreName(purl);
+
+  // Creation date logic — FIRST SAVE ONLY
+  const cardDate = productCodeLocked
+    ? lockedCardDate
+    : new Date().toISOString();
+
+  const normalizedTitle  = title.toLowerCase();
+  const normalizedAuthor = author.toLowerCase();
+
+  const hasPrice =
+    cost && !isNaN(cost) && Number(cost) > 0;
+
+  /* -------------------------------------------------------------
+     4) BUILD PRODUCT CARD HTML (template literal, no concat bugs)
+  ------------------------------------------------------------- */
+  const cardHTML = `
+<article class="product-card"
+  data-code="${escapeHtml(code)}"
+  data-title="${escapeHtml(normalizedTitle)}"
+  data-author="${escapeHtml(normalizedAuthor)}"
+  data-price="${hasPrice ? Number(cost).toFixed(2) : ""}"
+  data-tags="${escapeHtml(tagsParsed.data)}"
+  data-date="${escapeHtml(cardDate)}"
+  style="width:300px; border:4px solid #999; padding:10px; box-sizing:border-box;">
+
+  <div style="text-align:center;">
+    <a href="${encodeURI(purl)}" target="_blank" rel="noopener noreferrer">
+      <img src="${encodeURI(imgurl)}"
+           alt="${escapeHtml(title)}"
+           style="width:100%; height:auto; border:0;">
+    </a>
+  </div>
+
+  <h3 style="font-family:Lexend; font-size:24px; font-weight:bold; text-align:center; margin:10px 0 5px 0;">
+    ${escapeHtml(title)}
+  </h3>
+
+  ${author ? `
+  <div style="font-family:Lexend; font-size:21px; font-weight:bold; text-align:center; margin-bottom:8px;">
+    ${escapeHtml(author)}
+  </div>` : ""}
+
+  <div style="font-family:Lexend; font-size:21px; margin:10px 0;
+       ${hasPrice ? "display:flex; justify-content:space-between;" : "text-align:center;"}">
+    <span>${escapeHtml(code)}</span>
+    ${hasPrice ? `<span>$ ${Number(cost).toFixed(2)}</span>` : ""}
+  </div>
+
+  <p style="font-family:Lexend; font-size:21px; font-weight:400; line-height:26px; margin:10px 0;">
+    ${desc}
+  </p>
+
+  <div style="margin:14px 0; text-align:center;">
+    <a href="${encodeURI(purl)}" target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;
+              padding:10px 21px;
+              font-family:Lexend;
+              font-size:18px;
+              font-weight:bold;
+              color:#fff;
+              background:#2e7d32;
+              border:4px solid #1b5e20;
+              border-radius:999px;
+              box-shadow:0 3px 0 #666;
+              text-decoration:none;">
+      View Details${storeName ? " at " + storeName + ".com" : ""}
+    </a>
+  </div>
+
+</article>`;
+
+  /* -------------------------------------------------------------
+     5) STORE + PREVIEW
+  ------------------------------------------------------------- */
+  window.finalProductHTML = cardHTML;
+
+  const preview = document.getElementById("previewBox");
+  if (preview) {
+    preview.innerHTML = `<div style="font-weight:400;">${cardHTML}</div>`;
+  }
+}
 
   /* ===============================================================
      ESCAPE HTML HELPER
