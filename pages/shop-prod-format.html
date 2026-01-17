@@ -446,6 +446,119 @@ function applySelectedOptionStyle(selectId) {
     </tr>
   </table>
 
+<!-- =============================================================
+     SAVE CONFIRMATION MODAL — PRODUCT IDENTITY LOCK MOMENT
+     - Bright visual interruption
+     - Explicit language
+     - No ambiguity
+     - No browser confirm()
+============================================================== -->
+<style>
+  #saveConfirmOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  #saveConfirmModal {
+    background: #fff3cd; /* bright warning yellow */
+    border: 6px solid #ff9800;
+    border-radius: 14px;
+    width: 520px;
+    max-width: 90%;
+    padding: 22px;
+    font-family: Lexend, sans-serif;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+
+  #saveConfirmModal h3 {
+    margin-top: 0;
+    font-size: 26px;
+    text-align: center;
+    color: #7a3e00;
+  }
+
+  #saveConfirmDetails {
+    font-size: 20px;
+    margin: 14px 0;
+    line-height: 1.4;
+  }
+
+  #saveConfirmDetails strong {
+    display: inline-block;
+    width: 140px;
+  }
+
+  #saveConfirmWarning {
+    font-size: 18px;
+    margin: 14px 0;
+    color: #5c2c00;
+  }
+
+  #saveConfirmButtons {
+    display: flex;
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .saveConfirmBtn {
+    flex: 1;
+    padding: 12px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 999px;
+    cursor: pointer;
+    border: none;
+  }
+
+  #confirmSaveBtn {
+    background: #2e7d32;
+    color: #ffffff;
+    box-shadow: 0 4px 0 #1b5e20;
+  }
+
+  #cancelSaveBtn {
+    background: #b71c1c;
+    color: #ffffff;
+    box-shadow: 0 4px 0 #7f0000;
+  }
+</style>
+
+<div id="saveConfirmOverlay">
+  <div id="saveConfirmModal">
+    <h3>Confirm Save Product Listing</h3>
+
+    <div id="saveConfirmDetails">
+      <div><strong>Product Code:</strong> <span id="confirmCode"></span></div>
+      <div><strong>Title:</strong> <span id="confirmTitle"></span></div>
+      <div><strong>Price:</strong> <span id="confirmPrice"></span></div>
+    </div>
+
+    <div id="saveConfirmWarning">
+      Once saved, the <strong>Product Code cannot be changed</strong> by this page.<br>
+      You may continue editing all other fields after saving.
+    </div>
+
+    <div id="saveConfirmButtons">
+      <button id="confirmSaveBtn" class="saveConfirmBtn">
+        Save Product Listing EXACTLY as it is now<br>(locks Product Code)
+      </button>
+
+      <button id="cancelSaveBtn" class="saveConfirmBtn">
+        Re‑Edit Product Listing (return to editing)<br>
+        <span style="font-weight:normal; font-size:16px;">
+          This may cause Product Code to be changed by the system.
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+  
   <!-- ============================================================= -->
   <!-- JAVASCRIPT SECTION                                            -->
   <!-- ============================================================= -->
@@ -486,7 +599,37 @@ function applySelectedOptionStyle(selectId) {
 </script>
 
 <script>
+
 /* ===============================================================
+   PRODUCT IDENTITY LOCK STATE (authoritative lifecycle)
+
+   productCodeLocked:
+     - false = "Preview/Edit mode"
+       * Interest / Product Type / Site Family may be changed
+       * Product Code may be rebuilt and sequence recalculated
+       * Product Code may be manually typed (validated/sanitized)
+
+     - true  = "Saved identity mode"
+       * Product Code MUST NOT change in this page
+       * Dropdown-driven rebuild MUST NOT run
+       * Manual typing into Product Code MUST NOT modify it
+       * Re-saving overwrites the existing product file for that code
+
+   lockedProductCode:
+     - The Product Code as it existed at the first CONFIRMED SAVE
+     - Used as a mechanical truth source after locking
+
+   lockedCardDate:
+     - The FIRST LISTING DATE for GpasShop (ISO-8601)
+     - Set once at first CONFIRMED SAVE
+     - NEVER updated on later edits/saves
+     - There is intentionally NO "last updated" date anywhere
+================================================================= */
+let productCodeLocked = false;
+let lockedProductCode = "";
+let lockedCardDate = "";
+  
+  /* ===============================================================
    PRODUCT CODE BUILDER
    Pattern: [INTEREST][TYPE][SITE]-[NNN].html
    - INTEREST = F or H
