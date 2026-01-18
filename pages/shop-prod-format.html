@@ -171,7 +171,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/18 - A1</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/18 - A2</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -1126,6 +1126,16 @@ if (rawPrice && !isNaN(rawPrice) && Number(rawPrice) > 0) {
 
   // ---- UNLOCK PRODUCT CODE BUILDER ----
 window.productCodeLocked = false;
+
+// Re-arm product code builder after programmatic reset
+  const interestEl = document.getElementById('interest');
+  const ptypeEl    = document.getElementById('ptype');
+  const siteEl     = document.getElementById('site');
+
+  if (interestEl) interestEl.dispatchEvent(new Event('change'));
+  if (ptypeEl)    ptypeEl.dispatchEvent(new Event('change'));
+  if (siteEl)     siteEl.dispatchEvent(new Event('change'));
+
   }
   
 /* ===============================================================
