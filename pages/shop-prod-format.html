@@ -12,6 +12,7 @@
 
   <meta charset="UTF-8">
   <title>GPA'S Shop Product Formatter</title>
+  <link rel="icon" href="icons/admin-favicon.jpg" type="image/jpeg">
 
   <!-- 
     NOTE: Your admin menu is a separate file.
@@ -170,7 +171,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - B2</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - C1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -333,7 +334,31 @@ function applySelectedOptionStyle(selectId) {
   Tags (max 10, 1–2 words each, comma‑separated):
 </label><br>
 
-        <textarea id="tags" rows="5"></textarea>
+        <textarea id="tags" rows="4"></textarea>
+
+<!-- Editor helpers: Line Break and Italic -->
+<div class="editor-helpers" style="margin-top:8px;">
+  <div style="display:flex; align-items:center; gap:8px;">
+    <div style="flex:1; text-align:center;">
+      <button id="btnLineBreak" class="admin-btn" type="button"
+        style="padding:8px 14px; font-family:Lexend; font-size:16px;">
+        Line<br>Break
+      </button>
+    </div>
+
+    <div style="flex:1; text-align:right;">
+      <button id="btnItalic" class="admin-btn" type="button"
+        style="padding:8px 14px; font-family:Lexend; font-size:16px;">
+        Italic
+      </button>
+    </div>
+  </div>
+
+  <div style="margin-top:10px; font-family:Lexend; font-size:14px; color:#333;">
+    <strong>Allowed HTML:</strong>
+    &nbsp;&nbsp;&nbsp; &lt;br&gt; &nbsp; &lt;b&gt; &nbsp; &lt;i&gt; &nbsp; &lt;em&gt; &nbsp; &lt;strong&gt;
+  </div>
+</div>
 
       </td>
 
@@ -641,30 +666,29 @@ let lockedCardDate = "";
 console.log("PRODUCT CODE SCRIPT LOADED");
 
 async function buildProductCode() {
-
   // HARD STOP: Product identity is locked after first save
   if (productCodeLocked) return;
 
-  const a = (document.getElementById("interest").value || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
-  const b = (document.getElementById("ptype").value    || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
-  const c = (document.getElementById("site").value     || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+  // Build a strict 3-letter prefix (letters only, first letter of each select)
+  const a = (document.getElementById("interest")?.value || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+  const b = (document.getElementById("ptype")?.value    || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+  const c = (document.getElementById("site")?.value     || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
   const prefix = (a + b + c).padEnd(3, "X").slice(0,3);
 
   // Need all three dropdowns selected before we attempt a code
   if (!document.getElementById("interest")?.value || !document.getElementById("ptype")?.value || !document.getElementById("site")?.value) return;
 
-  console.log("buildProductCode run — raw:", document.getElementById("interest")?.value, document.getElementById("ptype")?.value, document.getElementById("site")?.value, "prefix:", prefix);
-
-
-  const apiUrl = "https://api.github.com/repos/GpaJohnsStories/gpasshop/contents/prod";
+  // Directory listing only — correct repo/folder casing and branch ref
+  const apiUrl = "https://api.github.com/repos/GpaJohnsStories/gpasshop/contents/prod?ref=main";
   let nextSuffix = "001";
 
   try {
     const token = sessionStorage.getItem("githubToken");
-    const response = await fetch(apiUrl + "?ref=main", { headers: token ? { Authorization: `token ${token}` } : {} });
+    const response = await fetch(apiUrl, { headers: token ? { Authorization: `token ${token}` } : {} });
 
-  
-    if (response.ok) {
+    if (!response.ok) {
+      console.warn("GitHub contents fetch returned", response.status);
+    } else {
       const files = await response.json();
       const regex = new RegExp("^" + prefix + "-(\\d{3})\\.html$", "i");
       let max = 0;
@@ -685,7 +709,8 @@ async function buildProductCode() {
   }
 
   const finalCode = prefix + "-" + nextSuffix;
-  document.getElementById("pcode").value = finalCode;
+  const pcodeEl = document.getElementById("pcode");
+  if (pcodeEl) pcodeEl.value = finalCode;
 }
   
   // Rebuild code whenever interest or type or site changes
