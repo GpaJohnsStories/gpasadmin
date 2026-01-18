@@ -171,7 +171,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - D3</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/18 - A1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -1102,6 +1102,7 @@ if (rawPrice && !isNaN(rawPrice) && Number(rawPrice) > 0) {
     const descEl   = document.getElementById('desc');
     const interest = document.getElementById('interest');
     const ptype    = document.getElementById('ptype');
+    const site = document.getElementById('site');
     const tagsEl   = document.getElementById('tags');
     const purlEl   = document.getElementById('purl');
     const imgurlEl = document.getElementById('imgurl');
@@ -1114,22 +1115,19 @@ if (rawPrice && !isNaN(rawPrice) && Number(rawPrice) > 0) {
     if (tagsEl)   tagsEl.value = '';
     if (purlEl)   purlEl.value = '';
     if (imgurlEl) imgurlEl.value = '';
-
-    const descCounter = document.getElementById('descCounter');
-    if (descCounter) descCounter.textContent = '0 / 600';
-
     if (interest) interest.value = '';
+    if (site) site.value = '';
     if (ptype)    ptype.value = '';
 
     const preview = document.getElementById("previewBox");
     if (preview) preview.innerHTML = '';
 
     window.finalProductHTML = '';
-  }
 
   // ---- UNLOCK PRODUCT CODE BUILDER ----
 window.productCodeLocked = false;
-
+  }
+  
 /* ===============================================================
    BUTTON HANDLERS — CLEAN, SINGLE-TRIGGER SETUP
    (DOM-safe, future-proof)
