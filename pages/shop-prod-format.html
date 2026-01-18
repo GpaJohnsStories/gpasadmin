@@ -170,7 +170,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - B1</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - B2</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -651,7 +651,10 @@ async function buildProductCode() {
   const prefix = (a + b + c).padEnd(3, "X").slice(0,3);
 
   // Need all three dropdowns selected before we attempt a code
-  if (!prefix || prefix.length < 3) return;
+  if (!document.getElementById("interest")?.value || !document.getElementById("ptype")?.value || !document.getElementById("site")?.value) return;
+
+  console.log("buildProductCode run — raw:", document.getElementById("interest")?.value, document.getElementById("ptype")?.value, document.getElementById("site")?.value, "prefix:", prefix);
+
 
   const apiUrl = "https://api.github.com/repos/GpaJohnsStories/gpasshop/contents/prod";
   let nextSuffix = "001";
