@@ -170,7 +170,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - A5b</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/17 - B1</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -645,22 +645,22 @@ async function buildProductCode() {
   // HARD STOP: Product identity is locked after first save
   if (productCodeLocked) return;
 
-  const interest = document.getElementById("interest").value.toUpperCase();
-  const ptype    = document.getElementById("ptype").value.toUpperCase();
-  const site     = document.getElementById("site").value;
+  const a = (document.getElementById("interest").value || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+  const b = (document.getElementById("ptype").value    || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+  const c = (document.getElementById("site").value     || "").toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+  const prefix = (a + b + c).padEnd(3, "X").slice(0,3);
 
   // Need all three dropdowns selected before we attempt a code
-  if (!interest || !ptype || !site) return;
+  if (!prefix || prefix.length < 3) return;
 
-  const prefix = interest + ptype + site;
-
-  const apiUrl =
-    "https://api.github.com/repos/GpaJohnsStories/GpasShop/contents/shop/prod";
-
+  const apiUrl = "https://api.github.com/repos/GpaJohnsStories/gpasshop/contents/prod";
   let nextSuffix = "001";
 
   try {
-    const response = await fetch(apiUrl);
+    const token = sessionStorage.getItem("githubToken");
+    const response = await fetch(apiUrl + "?ref=main", { headers: token ? { Authorization: `token ${token}` } : {} });
+
+  
     if (response.ok) {
       const files = await response.json();
       const regex = new RegExp("^" + prefix + "-(\\d{3})\\.html$", "i");
