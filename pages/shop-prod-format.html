@@ -171,7 +171,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/25 - BB</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/25 - CC</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -1133,6 +1133,10 @@ function clearFormFields() {
 productCodeLocked = false;
 lockedProductCode = "";
 lockedCardDate = "";
+  
+// ---- Reset pcode ----
+const pcodeInput = document.getElementById("pcode");
+if (pcodeInput) pcodeInput.disabled = false;
 
   // Re-arm product code builder after programmatic reset
   if (interest) { interest.dispatchEvent(new Event('input')); interest.dispatchEvent(new Event('change')); }
