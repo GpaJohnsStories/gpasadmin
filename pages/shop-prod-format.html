@@ -171,7 +171,7 @@
   </script>
 
   <!-- PAGE TITLE -->
-  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/25 - FF</h2>
+  <h2 style="text-align:center;">GPA'S Shop — Format Product Card -- 01/25 - GG</h2>
 
   <!-- 
     MAIN 3-COLUMN TABLE 
@@ -419,6 +419,44 @@ function applySelectedOptionStyle(selectId) {
         </div>
       </td>
 
+    <!-- Allowed tags statement -->
+<div style="margin-top:14px; margin-bottom:4px; font-size:14px;">
+  Allowed HTML: &lt;br&gt;&nbsp; &lt;b&gt;&nbsp; &lt;em&gt;&nbsp;
+</div>
+
+<!-- Formatting buttons row -->
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom:8px;">
+  <button type="button"
+    style="background:linear-gradient(180deg,#126522 70%,#094013 100%);color:#fff;border:none;border-radius:28px;padding:7px 28px;font-size:16px;font-weight:500;box-shadow:0 2px 6px #bbb;cursor:pointer;outline:none;appearance:none;transition:none;"
+    onclick="insertAtCursor('desc', ' <br>\\n<br>')">&lt;br&gt;</button>
+
+  <button type="button"
+    style="background:linear-gradient(180deg,#b85a00 70%,#8a4200 100%);color:#fff;border:none;border-radius:28px;padding:7px 28px;font-size:16px;font-weight:500;box-shadow:0 2px 6px #bbb;cursor:pointer;outline:none;appearance:none;transition:none;"
+    onclick="wrapSelectionWith('desc','<b>','</b>')">&lt;b&gt;</button>
+
+  <button type="button"
+    style="background:linear-gradient(180deg,#184288 70%,#14316b 100%);color:#fff;border:none;border-radius:28px;padding:7px 28px;font-size:16px;font-weight:500;box-shadow:0 2px 6px #bbb;cursor:pointer;outline:none;appearance:none;transition:none;"
+    onclick="wrapSelectionWith('desc','<em>','</em>')">&lt;em&gt;</button>
+</div><!-- Allowed tags statement -->
+<div style="margin-top:14px; margin-bottom:4px; font-size:14px;">
+  Allowed HTML: &lt;br&gt;&nbsp; &lt;b&gt;&nbsp; &lt;i&gt;&nbsp; &lt;em&gt;&nbsp; &lt;strong&gt;
+</div>
+
+<!-- Formatting buttons row -->
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom:8px;">
+  <button type="button"
+    style="background:linear-gradient(180deg,#126522 70%,#094013 100%);color:#fff;border:none;border-radius:28px;padding:7px 28px;font-size:16px;font-weight:500;box-shadow:0 2px 6px #bbb;cursor:pointer;outline:none;appearance:none;transition:none;"
+    onclick="insertAtCursor('desc', ' <br>\\n<br>')">&lt;br&gt;</button>
+
+  <button type="button"
+    style="background:linear-gradient(180deg,#b85a00 70%,#8a4200 100%);color:#fff;border:none;border-radius:28px;padding:7px 28px;font-size:16px;font-weight:500;box-shadow:0 2px 6px #bbb;cursor:pointer;outline:none;appearance:none;transition:none;"
+    onclick="wrapSelectionWith('desc','<b>','</b>')">&lt;b&gt;</button>
+
+  <button type="button"
+    style="background:linear-gradient(180deg,#184288 70%,#14316b 100%);color:#fff;border:none;border-radius:28px;padding:7px 28px;font-size:16px;font-weight:500;box-shadow:0 2px 6px #bbb;cursor:pointer;outline:none;appearance:none;transition:none;"
+    onclick="wrapSelectionWith('desc','<em>','</em>')">&lt;em&gt;</button>
+</div>
+
       <!-- ========================================================= -->
       <!-- COLUMN 3 — PREVIEW BUTTON + PREVIEW ONLY                   -->
       <!-- ========================================================= -->
@@ -572,6 +610,32 @@ function applySelectedOptionStyle(selectId) {
   <!-- JAVASCRIPT SECTION                                            -->
   <!-- ============================================================= -->
   <script>
+
+    // Insert one space and two <br> tags at the cursor position in textarea
+function insertAtCursor(id, insertText) {
+  const ta = document.getElementById(id);
+  if (!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.substring(0, start) + insertText + ta.value.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + insertText.length;
+  ta.focus();
+}
+
+// Wrap the selected text with openTag and closeTag in textarea
+function wrapSelectionWith(id, openTag, closeTag) {
+  const ta = document.getElementById(id);
+  if (!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  const newText = openTag + selected + closeTag;
+  ta.value = ta.value.substring(0, start) + newText + ta.value.substring(end);
+  // Keep selection inside the tags for easy editing
+  ta.selectionStart = start + openTag.length;
+  ta.selectionEnd = start + openTag.length + selected.length;
+  ta.focus();
+}
+
+    
 /* ===============================================================
    DESCRIPTION WORD + SHORT WORD COUNTER
    Informational only — no limits enforced.
